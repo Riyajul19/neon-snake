@@ -1,17 +1,17 @@
 {
-  "name": "Neon Snake - Cyber Arena",
+  "name": "Neon Snake",
   "short_name": "Neon Snake",
-  "description": "A modern cyberpunk Snake game.",
   "start_url": "./",
   "display": "standalone",
-  "background_color": "#02030a",
-  "theme_color": "#00ffff",
+  "background_color": "#0b081a",
+  "theme_color": "#7f5af0",
   "orientation": "portrait",
   "icons": [
     {
-      "src": "icon.png",
+      "src": "./icon.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ]
 }
