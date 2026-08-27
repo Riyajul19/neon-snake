@@ -25,7 +25,7 @@ body{
     background:
     radial-gradient(circle at 50% 20%,
     #17245c,#07091d 45%,#02030a);
-    overflow:hidden;
+    overflow:auto;
 }
 
 /* CYBER GRID */
@@ -76,6 +76,8 @@ body::before{
     align-items:center;
 
     position:relative;
+
+    padding:30px 15px;
 }
 
 .game-panel{
@@ -235,6 +237,10 @@ canvas{
     max-width:500px;
 
     aspect-ratio:1;
+    
+    display:block;
+
+    margin-bottom:10px;
 
     background:
     rgba(0,0,0,.45);
@@ -411,6 +417,11 @@ button:hover{
         padding:15px;
         border-radius:20px;
     }
+.game-wrapper{
+    align-items:flex-start;
+    padding-top:20px;
+    padding-bottom:20px;
+}
 
     .logo h1{
         font-size:26px;
@@ -1322,5 +1333,3 @@ if ("serviceWorker" in navigator) {
 </script>
 
 </body>
-
-</html>
