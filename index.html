@@ -1,1224 +1,2506 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/png" href="icon.png" />
-    <link rel="apple-touch-icon" href="icon.png" />
-    <link rel="manifest" href="manifest.json" />
-    <meta name="theme-color" content="#7f5af0" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>HOLO SNAKE · Aurora</title>
 
-    <!-- Google Fonts for unique modern typography -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<meta charset="UTF-8">
 
-    <style>
-        /* ───────────── ROOT VARIABLES ───────────── */
-        :root {
-            --glass-bg: rgba(20, 15, 45, 0.55);
-            --glass-border: rgba(255, 255, 255, 0.08);
-            --shadow-glow: 0 8px 32px rgba(0, 0, 0, 0.6);
-            --text-primary: #f0f3ff;
-            --text-muted: #a8b5d9;
-            --accent-hue: 270;
-            --border-angle: 0deg;
-        }
+<meta name="viewport"
+content="width=device-width,
+initial-scale=1.0,
+maximum-scale=1.0,
+user-scalable=no">
 
-        /* ───────────── RESET & BASE ───────────── */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+<meta name="theme-color" content="#050713">
 
-        body {
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-family: 'Inter', sans-serif;
-            background: #0b081a;
-            color: var(--text-primary);
-            overflow: hidden;
-            /* will be covered by aurora */
-        }
+<meta name="description"
+content="NEON SNAKE - Cyber Arena">
 
-        /* ─── AURORA BOREALIS ANIMATED BACKGROUND ─── */
-        body::before {
-            content: '';
-            position: fixed;
-            inset: 0;
-            z-index: 0;
-            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
-            /* fallback */
-        }
+<title>NEON SNAKE | Cyber Arena</title>
 
-        .aurora-bg {
-            position: fixed;
-            inset: 0;
-            z-index: 0;
-            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
-            overflow: hidden;
-        }
+<!-- PWA -->
+<link rel="manifest" href="manifest.json">
 
-        .aurora-bg::after {
-            content: '';
-            position: absolute;
-            inset: -50%;
-            background:
-                radial-gradient(ellipse at 20% 50%, rgba(120, 60, 255, .35) 0%, transparent 50%),
-                radial-gradient(ellipse at 80% 20%, rgba(0, 200, 255, .25) 0%, transparent 40%),
-                radial-gradient(ellipse at 40% 80%, rgba(255, 0, 200, .20) 0%, transparent 40%),
-                radial-gradient(ellipse at 70% 70%, rgba(255, 200, 0, .15) 0%, transparent 30%);
-            background-size: 200% 200%;
-            animation: auroraMove 18s ease-in-out infinite alternate;
-            mix-blend-mode: screen;
-            filter: blur(60px);
-        }
+<!-- YOUR ICON -->
+<link rel="icon"
+type="image/png"
+sizes="512x512"
+href="icon.png">
 
-        @keyframes auroraMove {
-            0% {
-                transform: translate(-5%, -5%) rotate(-5deg) scale(1.2);
-            }
-            50% {
-                transform: translate(10%, 8%) rotate(8deg) scale(1.1);
-            }
-            100% {
-                transform: translate(-8%, 10%) rotate(-3deg) scale(1.3);
-            }
-        }
+<link rel="apple-touch-icon"
+href="icon.png">
 
-        /* subtle noise texture */
-        .aurora-bg::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            opacity: .12;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-            background-repeat: repeat;
-            background-size: 180px 180px;
-            mix-blend-mode: overlay;
-            pointer-events: none;
-        }
 
-        /* ───────────── GAME WRAPPER ───────────── */
-        .game-wrapper {
-            width: 100%;
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            position: relative;
-            z-index: 1;
-            padding: 20px 15px;
-        }
+<style>
 
-        /* ─── HOLOGRAPHIC GLASS PANEL ─── */
-        .game-panel {
-            position: relative;
-            width: 95%;
-            max-width: 660px;
-            padding: 28px 24px 24px;
-            border-radius: 40px;
-            background: var(--glass-bg);
-            backdrop-filter: blur(32px) saturate(1.4);
-            -webkit-backdrop-filter: blur(32px) saturate(1.4);
-            box-shadow: var(--shadow-glow), inset 0 1px 0 rgba(255, 255, 255, 0.06);
-            border: 1px solid rgba(255, 255, 255, 0.04);
-            overflow: hidden;
-            transition: transform 0.2s ease;
-        }
+/* =========================================================
+   RESET
+========================================================= */
 
-        /* rotating holographic border */
-        .game-panel::before {
-            content: '';
-            position: absolute;
-            inset: -2px;
-            z-index: -1;
-            border-radius: 42px;
-            padding: 2px;
-            background: conic-gradient(from var(--border-angle, 0deg),
-                    rgba(120, 60, 255, 0.6),
-                    rgba(0, 200, 255, 0.6),
-                    rgba(255, 0, 200, 0.6),
-                    rgba(255, 200, 0, 0.6),
-                    rgba(120, 60, 255, 0.6));
-            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-            -webkit-mask-composite: xor;
-            mask-composite: exclude;
-            animation: borderSpin 6s linear infinite;
-        }
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
 
-        @keyframes borderSpin {
-            to {
-                --border-angle: 360deg;
-            }
-        }
 
-        @property --border-angle {
-            syntax: '<angle>';
-            inherits: false;
-            initial-value: 0deg;
-        }
+/* =========================================================
+   BODY
+========================================================= */
 
-        /* subtle internal glow */
-        .game-panel::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-            border-radius: 40px;
-            background: radial-gradient(circle at 30% 10%, rgba(255, 255, 255, 0.03), transparent 60%);
-            pointer-events: none;
-        }
+html{
+    width:100%;
+    min-height:100%;
+    background:#050713;
+}
 
-        /* ─── LOGO ─── */
-        .logo {
-            text-align: center;
-            margin-bottom: 14px;
-            position: relative;
-            z-index: 2;
-        }
+body{
 
-        .logo-icon {
-            font-size: 46px;
-            display: inline-block;
-            animation: floatIcon 3s ease-in-out infinite;
-            filter: drop-shadow(0 0 30px rgba(160, 100, 255, .5));
-        }
+    width:100%;
+    min-height:100vh;
 
-        @keyframes floatIcon {
-            0%,
-            100% {
-                transform: translateY(0) scale(1);
-            }
-            50% {
-                transform: translateY(-6px) scale(1.04);
-            }
-        }
+    font-family:
+    "Segoe UI",
+    Arial,
+    sans-serif;
 
-        .logo h1 {
-            font-family: 'Orbitron', sans-serif;
-            font-weight: 900;
-            font-size: 32px;
-            letter-spacing: 6px;
-            background: linear-gradient(135deg, #c084fc, #60a5fa, #f472b6);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            text-shadow: none;
-            filter: drop-shadow(0 0 40px rgba(160, 100, 255, .2));
-        }
+    color:#ffffff;
 
-        .logo p {
-            margin-top: -2px;
-            font-family: 'Orbitron', sans-serif;
-            font-weight: 400;
-            letter-spacing: 6px;
-            font-size: 10px;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            opacity: 0.7;
-        }
+    background:
+    radial-gradient(
+        circle at 50% 0%,
+        #18275f 0%,
+        #0b1230 35%,
+        #050713 70%,
+        #02030a 100%
+    );
 
-        /* ─── HUD ─── */
-        .hud {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 8px;
-            margin-bottom: 12px;
-            position: relative;
-            z-index: 2;
-        }
+    overflow-x:hidden;
 
-        .hud-box {
-            padding: 10px 6px;
-            text-align: center;
-            border-radius: 20px;
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(4px);
-            -webkit-backdrop-filter: blur(4px);
-            transition: background 0.2s;
-        }
+    touch-action:pan-y;
+}
 
-        .hud-title {
-            font-size: 8px;
-            font-weight: 600;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            color: var(--text-muted);
-            opacity: 0.6;
-        }
 
-        .hud-value {
-            margin-top: 2px;
-            font-family: 'Orbitron', sans-serif;
-            font-weight: 700;
-            font-size: 20px;
-            background: linear-gradient(to right, #e0e7ff, #a5b4fc);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
+/* =========================================================
+   BACKGROUND GRID
+========================================================= */
 
-        /* ─── POWER BAR ─── */
-        .power-bar {
-            display: flex;
-            justify-content: center;
-            flex-wrap: wrap;
-            gap: 6px;
-            min-height: 30px;
-            margin-bottom: 10px;
-            position: relative;
-            z-index: 2;
-        }
+body::before{
 
-        .power {
-            padding: 4px 14px;
-            border-radius: 40px;
-            font-size: 10px;
-            font-weight: 600;
-            letter-spacing: .6px;
-            text-transform: uppercase;
-            background: rgba(255, 255, 255, 0.04);
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            color: #c7d2fe;
-            box-shadow: 0 0 20px rgba(120, 60, 255, 0.1);
-            animation: pulseBadge 2s ease-in-out infinite;
-        }
+    content:"";
 
-        @keyframes pulseBadge {
-            0%,
-            100% {
-                opacity: .7;
-                transform: scale(.96);
-            }
-            50% {
-                opacity: 1;
-                transform: scale(1.04);
-            }
-        }
+    position:fixed;
 
-        /* ─── CANVAS ─── */
-        .canvas-wrapper {
-            display: flex;
-            justify-content: center;
-            position: relative;
-            z-index: 2;
-        }
+    inset:0;
 
-        canvas {
-            width: 100%;
-            max-width: 500px;
-            aspect-ratio: 1;
-            display: block;
-            border-radius: 28px;
-            background: rgba(0, 0, 0, 0.40);
-            border: 1px solid rgba(255, 255, 255, 0.04);
-            box-shadow: inset 0 0 60px rgba(0, 0, 0, 0.5), 0 0 40px rgba(120, 60, 255, 0.08);
-            touch-action: none;
-        }
+    pointer-events:none;
 
-        /* ─── BUTTONS ─── */
-        .button-area {
-            display: flex;
-            justify-content: center;
-            gap: 14px;
-            margin-top: 18px;
-            flex-wrap: wrap;
-            position: relative;
-            z-index: 2;
-        }
+    background-image:
 
-        button {
-            border: none;
-            padding: 14px 32px;
-            border-radius: 60px;
-            font-family: 'Inter', sans-serif;
-            font-weight: 600;
-            font-size: 13px;
-            letter-spacing: 1.2px;
-            text-transform: uppercase;
-            cursor: pointer;
-            background: rgba(255, 255, 255, 0.04);
-            color: #fff;
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
-            transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
-            touch-action: manipulation;
-            flex: 0 1 auto;
-            min-width: 120px;
-        }
+    linear-gradient(
+        rgba(0,255,255,.035) 1px,
+        transparent 1px
+    ),
 
-        button:hover {
-            transform: translateY(-3px) scale(1.02);
-            background: rgba(255, 255, 255, 0.08);
-            border-color: rgba(255, 255, 255, 0.15);
-            box-shadow: 0 8px 30px rgba(120, 60, 255, 0.25);
-        }
+    linear-gradient(
+        90deg,
+        rgba(0,255,255,.035) 1px,
+        transparent 1px
+    );
 
-        button:active {
-            transform: scale(.94);
-        }
+    background-size:40px 40px;
 
-        .btn-primary {
-            background: linear-gradient(135deg, rgba(120, 60, 255, 0.25), rgba(0, 200, 255, 0.15));
-            border-color: rgba(120, 60, 255, 0.3);
-            box-shadow: 0 0 30px rgba(120, 60, 255, 0.08);
-        }
+    mask-image:
+    linear-gradient(
+        to bottom,
+        black,
+        transparent 90%
+    );
 
-        .btn-primary:hover {
-            background: linear-gradient(135deg, rgba(120, 60, 255, 0.35), rgba(0, 200, 255, 0.25));
-            border-color: rgba(120, 60, 255, 0.5);
-            box-shadow: 0 0 50px rgba(120, 60, 255, 0.2);
-        }
+    z-index:0;
+}
 
-        .btn-secondary {
-            background: rgba(255, 255, 255, 0.02);
-            border-color: rgba(255, 255, 255, 0.04);
-        }
 
-        /* ─── OVERLAY SCREENS ─── */
-        .screen {
-            position: fixed;
-            inset: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background: rgba(5, 3, 15, 0.75);
-            backdrop-filter: blur(24px) saturate(1.6);
-            -webkit-backdrop-filter: blur(24px) saturate(1.6);
-            z-index: 100;
-            padding: 24px;
-            animation: fadeIn .5s ease;
-        }
+/* =========================================================
+   MAIN WRAPPER
+========================================================= */
 
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-            }
-            to {
-                opacity: 1;
-            }
-        }
+.game-wrapper{
 
-        .screen-card {
-            width: 100%;
-            max-width: 420px;
-            padding: 44px 32px;
-            text-align: center;
-            border-radius: 48px;
-            background: rgba(12, 8, 30, 0.65);
-            backdrop-filter: blur(40px);
-            -webkit-backdrop-filter: blur(40px);
-            border: 1px solid rgba(255, 255, 255, 0.04);
-            box-shadow: 0 0 80px rgba(120, 60, 255, 0.08);
-            animation: popGlass .5s cubic-bezier(0.34, 1.56, 0.64, 1);
-            position: relative;
-            overflow: hidden;
-        }
+    width:100%;
 
-        .screen-card::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            border-radius: 48px;
-            padding: 1px;
-            background: conic-gradient(from var(--border-angle, 0deg), transparent, rgba(255, 255, 255, 0.05), transparent);
-            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-            -webkit-mask-composite: xor;
-            mask-composite: exclude;
-            animation: borderSpin 8s linear infinite;
-            pointer-events: none;
-        }
+    min-height:100vh;
 
-        @keyframes popGlass {
-            from {
-                opacity: 0;
-                transform: scale(.90) translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: scale(1) translateY(0);
-            }
-        }
+    display:flex;
 
-        .screen-icon {
-            font-size: 64px;
-            margin-bottom: 4px;
-            filter: drop-shadow(0 0 40px rgba(160, 100, 255, .4));
-        }
+    justify-content:center;
 
-        .screen-card h2 {
-            font-family: 'Orbitron', sans-serif;
-            font-weight: 900;
-            font-size: 28px;
-            letter-spacing: 3px;
-            background: linear-gradient(135deg, #c084fc, #60a5fa);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
+    align-items:flex-start;
 
-        .screen-card p {
-            margin-top: 10px;
-            color: var(--text-muted);
-            font-size: 14px;
-            line-height: 1.7;
-            font-weight: 400;
-        }
+    padding:25px 12px 40px;
 
-        .screen-card .tagline {
-            font-size: 12px;
-            color: rgba(255, 255, 255, 0.25);
-            letter-spacing: 1px;
-            margin-top: 2px;
-        }
+    position:relative;
 
-        .screen-card button {
-            margin-top: 28px;
-            min-width: 180px;
-        }
+    z-index:1;
+}
 
-        .hidden {
-            display: none !important;
-        }
 
-        /* ─── MOBILE CONTROLS ─── */
-        .mobile-controls {
-            display: none;
-            width: 100%;
-            margin: 12px auto 0;
-            text-align: center;
-            user-select: none;
-            -webkit-user-select: none;
-            touch-action: manipulation;
-            position: relative;
-            z-index: 2;
-        }
+/* =========================================================
+   GAME PANEL
+========================================================= */
 
-        .mobile-controls .row {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin-top: 6px;
-        }
+.game-panel{
 
-        .mobile-controls button {
-            width: 64px;
-            height: 64px;
-            border-radius: 24px;
-            font-size: 28px;
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            background: rgba(255, 255, 255, 0.02);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
-            color: #e0e7ff;
-            padding: 0;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            transition: .12s ease;
-            touch-action: manipulation;
-            font-weight: 700;
-            min-width: unset;
-            flex: 0 0 auto;
-        }
+    width:min(94vw,620px);
 
-        .mobile-controls button:active {
-            transform: scale(.88);
-            background: rgba(255, 255, 255, 0.08);
-            border-color: rgba(255, 255, 255, 0.15);
-        }
+    padding:22px;
 
-        .mobile-controls .spacer {
-            width: 64px;
-            height: 64px;
-            display: inline-block;
-        }
+    border-radius:28px;
 
-        @media (max-width: 768px) {
-            .mobile-controls {
-                display: block;
-            }
-            .game-panel {
-                padding: 18px 14px 16px;
-                border-radius: 28px;
-            }
-            .logo h1 {
-                font-size: 24px;
-                letter-spacing: 4px;
-            }
-            .logo-icon {
-                font-size: 36px;
-            }
-            .button-area button {
-                padding: 12px 18px;
-                min-width: 100px;
-                font-size: 11px;
-            }
-            .screen-card {
-                padding: 32px 20px;
-            }
-            .screen-card h2 {
-                font-size: 24px;
-            }
-        }
+    background:
+    rgba(8,12,35,.88);
 
-        @media (max-width: 420px) {
-            .mobile-controls button {
-                width: 54px;
-                height: 54px;
-                font-size: 22px;
-                border-radius: 18px;
-            }
-            .mobile-controls .spacer {
-                width: 54px;
-                height: 54px;
-            }
-            .hud-value {
-                font-size: 16px;
-            }
-            .logo h1 {
-                font-size: 18px;
-            }
-        }
-    </style>
+    border:
+    1px solid rgba(0,255,255,.18);
+
+    box-shadow:
+
+    0 0 0 1px rgba(255,255,255,.03),
+
+    0 20px 80px rgba(0,0,0,.5),
+
+    0 0 50px rgba(0,255,255,.08);
+
+    backdrop-filter:blur(18px);
+}
+
+
+/* =========================================================
+   LOGO
+========================================================= */
+
+.logo{
+
+    text-align:center;
+
+    margin-bottom:18px;
+}
+
+.logo-icon{
+
+    font-size:42px;
+
+    margin-bottom:3px;
+
+    filter:
+    drop-shadow(0 0 12px #00ffff);
+}
+
+.logo h1{
+
+    font-size:clamp(28px,7vw,48px);
+
+    letter-spacing:5px;
+
+    font-weight:900;
+
+    background:
+    linear-gradient(
+        90deg,
+        #00ffff,
+        #ffffff,
+        #b76cff,
+        #00ffff
+    );
+
+    background-size:250%;
+
+    -webkit-background-clip:text;
+
+    -webkit-text-fill-color:transparent;
+
+    animation:
+    logoFlow 5s linear infinite;
+}
+
+.logo p{
+
+    margin-top:3px;
+
+    font-size:11px;
+
+    letter-spacing:5px;
+
+    color:#7f91c8;
+}
+
+
+@keyframes logoFlow{
+
+    0%{
+        background-position:0%;
+    }
+
+    100%{
+        background-position:250%;
+    }
+
+}
+
+
+/* =========================================================
+   HUD
+========================================================= */
+
+.hud{
+
+    display:grid;
+
+    grid-template-columns:
+    repeat(3,1fr);
+
+    gap:10px;
+
+    margin-bottom:12px;
+}
+
+.hud-box{
+
+    padding:10px 5px;
+
+    text-align:center;
+
+    border-radius:15px;
+
+    background:
+    rgba(255,255,255,.035);
+
+    border:
+    1px solid rgba(255,255,255,.08);
+}
+
+.hud-title{
+
+    font-size:9px;
+
+    letter-spacing:2px;
+
+    color:#7583aa;
+
+    text-transform:uppercase;
+}
+
+.hud-value{
+
+    margin-top:4px;
+
+    font-size:23px;
+
+    font-weight:800;
+
+    color:#ffffff;
+
+    text-shadow:
+    0 0 12px rgba(0,255,255,.5);
+}
+
+
+/* =========================================================
+   POWER BAR
+========================================================= */
+
+.power-bar{
+
+    min-height:28px;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    gap:6px;
+
+    margin-bottom:10px;
+
+    flex-wrap:wrap;
+}
+
+.power{
+
+    padding:5px 10px;
+
+    border-radius:999px;
+
+    font-size:10px;
+
+    font-weight:bold;
+
+    letter-spacing:1px;
+
+    background:
+    rgba(0,255,255,.08);
+
+    border:
+    1px solid rgba(0,255,255,.2);
+}
+
+
+/* =========================================================
+   CANVAS WRAPPER
+========================================================= */
+
+.canvas-wrapper{
+
+    width:100%;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    padding:0;
+
+}
+
+
+/* =========================================================
+   GAME CANVAS
+========================================================= */
+
+#game{
+
+    width:100%;
+
+    max-width:500px;
+
+    height:auto;
+
+    aspect-ratio:1/1;
+
+    display:block;
+
+    background:#03050d;
+
+    border-radius:22px;
+
+    border:
+    1px solid rgba(0,255,255,.35);
+
+    box-shadow:
+
+    0 0 25px rgba(0,255,255,.08),
+
+    inset 0 0 35px rgba(0,0,0,.8);
+
+    touch-action:none;
+}
+
+
+/* =========================================================
+   DESKTOP BUTTONS
+========================================================= */
+
+.button-area{
+
+    display:grid;
+
+    grid-template-columns:1fr 1fr;
+
+    gap:10px;
+
+    margin-top:14px;
+}
+
+button{
+
+    border:0;
+
+    outline:none;
+
+    cursor:pointer;
+
+    font-family:inherit;
+
+    -webkit-tap-highlight-color:transparent;
+
+    user-select:none;
+}
+
+.btn-primary,
+.btn-secondary{
+
+    min-height:48px;
+
+    border-radius:15px;
+
+    font-size:13px;
+
+    font-weight:800;
+
+    letter-spacing:2px;
+
+    transition:.15s;
+}
+
+.btn-primary{
+
+    color:#001014;
+
+    background:
+    linear-gradient(
+        135deg,
+        #00ffff,
+        #78f7ff
+    );
+
+    box-shadow:
+    0 0 20px rgba(0,255,255,.22);
+}
+
+.btn-secondary{
+
+    color:#dce7ff;
+
+    background:
+    rgba(255,255,255,.06);
+
+    border:
+    1px solid rgba(255,255,255,.1);
+}
+
+.btn-primary:active,
+.btn-secondary:active{
+
+    transform:scale(.96);
+}
+
+
+/* =========================================================
+   MOBILE D-PAD
+========================================================= */
+
+.mobile-controls{
+
+    display:none;
+
+    width:100%;
+
+    margin-top:16px;
+
+    text-align:center;
+
+    user-select:none;
+
+    touch-action:manipulation;
+}
+
+.mobile-controls .row{
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+}
+
+.mobile-controls button{
+
+    width:58px;
+
+    height:58px;
+
+    margin:4px;
+
+    border-radius:17px;
+
+    color:#00ffff;
+
+    font-size:24px;
+
+    font-weight:900;
+
+    background:
+    linear-gradient(
+        145deg,
+        rgba(0,255,255,.12),
+        rgba(130,70,255,.10)
+    );
+
+    border:
+    1px solid rgba(0,255,255,.45);
+
+    box-shadow:
+
+    0 0 18px rgba(0,255,255,.12),
+
+    inset 0 0 12px rgba(0,255,255,.04);
+
+    transition:
+    transform .08s,
+    background .08s;
+}
+
+.mobile-controls button:active{
+
+    transform:scale(.88);
+
+    background:
+    rgba(0,255,255,.3);
+
+    box-shadow:
+    0 0 25px rgba(0,255,255,.3);
+}
+
+
+/* =========================================================
+   SCREENS
+========================================================= */
+
+.screen{
+
+    position:fixed;
+
+    inset:0;
+
+    z-index:50;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    padding:20px;
+
+    background:
+    rgba(2,4,15,.78);
+
+    backdrop-filter:blur(12px);
+}
+
+.screen.hidden{
+
+    display:none;
+}
+
+.screen-card{
+
+    width:min(92vw,430px);
+
+    padding:35px 25px;
+
+    text-align:center;
+
+    border-radius:28px;
+
+    background:
+    linear-gradient(
+        145deg,
+        rgba(14,22,58,.96),
+        rgba(5,8,25,.96)
+    );
+
+    border:
+    1px solid rgba(0,255,255,.25);
+
+    box-shadow:
+
+    0 0 70px rgba(0,255,255,.1),
+
+    0 30px 100px rgba(0,0,0,.65);
+}
+
+.screen-icon{
+
+    font-size:55px;
+
+    margin-bottom:12px;
+
+    filter:
+    drop-shadow(0 0 18px #00ffff);
+}
+
+.screen-card h2{
+
+    font-size:clamp(28px,8vw,45px);
+
+    letter-spacing:4px;
+
+    margin-bottom:10px;
+
+    background:
+    linear-gradient(
+        90deg,
+        #00ffff,
+        #ffffff,
+        #c177ff
+    );
+
+    -webkit-background-clip:text;
+
+    -webkit-text-fill-color:transparent;
+}
+
+.screen-card p{
+
+    color:#8e9bc0;
+
+    line-height:1.7;
+
+    font-size:14px;
+
+    margin:8px 0;
+}
+
+.tagline{
+
+    font-size:11px !important;
+
+    color:#7180a9 !important;
+
+    letter-spacing:.5px;
+}
+
+.screen-card .btn-primary{
+
+    width:100%;
+
+    margin-top:18px;
+}
+
+
+/* =========================================================
+   DESKTOP SWIPE INFO
+========================================================= */
+
+.mobile-hint{
+
+    display:none;
+
+    text-align:center;
+
+    margin-top:10px;
+
+    font-size:9px;
+
+    letter-spacing:1px;
+
+    color:#5e6c94;
+}
+
+
+/* =========================================================
+   SMALL MOBILE
+========================================================= */
+
+@media(max-width:600px){
+
+    body{
+
+        overflow-x:hidden;
+
+    }
+
+    .game-wrapper{
+
+        padding:
+        12px
+        8px
+        25px;
+
+    }
+
+    .game-panel{
+
+        width:100%;
+
+        padding:14px;
+
+        border-radius:22px;
+
+    }
+
+    .logo{
+
+        margin-bottom:12px;
+
+    }
+
+    .logo-icon{
+
+        font-size:32px;
+
+    }
+
+    .logo h1{
+
+        font-size:27px;
+
+        letter-spacing:3px;
+
+    }
+
+    .logo p{
+
+        font-size:8px;
+
+        letter-spacing:3px;
+
+    }
+
+    .hud{
+
+        gap:6px;
+
+    }
+
+    .hud-box{
+
+        padding:8px 3px;
+
+    }
+
+    .hud-value{
+
+        font-size:19px;
+
+    }
+
+    .button-area{
+
+        grid-template-columns:1fr 1fr;
+
+    }
+
+    .mobile-controls{
+
+        display:block;
+
+    }
+
+    .mobile-hint{
+
+        display:block;
+
+    }
+
+    .mobile-controls button{
+
+        width:56px;
+
+        height:56px;
+
+    }
+
+}
+
+
+/* =========================================================
+   VERY SMALL PHONE
+========================================================= */
+
+@media(max-width:380px){
+
+    .game-panel{
+
+        padding:10px;
+
+    }
+
+    .mobile-controls button{
+
+        width:52px;
+
+        height:52px;
+
+        margin:3px;
+
+    }
+
+    .btn-primary,
+    .btn-secondary{
+
+        min-height:44px;
+
+        font-size:11px;
+
+    }
+
+}
+
+
+/* =========================================================
+   REDUCED MOTION
+========================================================= */
+
+@media(prefers-reduced-motion:reduce){
+
+    *{
+
+        animation:none !important;
+
+        transition:none !important;
+
+    }
+
+}
+
+</style>
+
 </head>
+
 
 <body>
 
-    <!-- ─── AURORA BACKGROUND ─── -->
-    <div class="aurora-bg"></div>
 
-    <!-- ─── GAME PANEL ─── -->
-    <div class="game-wrapper">
-        <div class="game-panel">
+<!-- =======================================================
+     START SCREEN
+======================================================= -->
 
-            <!-- LOGO -->
-            <div class="logo">
-                <div class="logo-icon">✦</div>
-                <h1>HOLO SNAKE</h1>
-                <p>aurora protocol</p>
+<div class="screen" id="startScreen">
+
+    <div class="screen-card">
+
+        <div class="screen-icon">
+            🐍
+        </div>
+
+        <h2>
+            NEON SNAKE
+        </h2>
+
+        <p>
+            Enter the cyber arena.<br>
+            Collect energy. Survive. Evolve.
+        </p>
+
+        <p class="tagline">
+            🔴 Energy &nbsp; • &nbsp;
+            💎 Crystal &nbsp; • &nbsp;
+            ⚡ Boost
+        </p>
+
+        <p class="tagline">
+            🛡️ Shield &nbsp; • &nbsp;
+            🌀 Portal &nbsp; • &nbsp;
+            💣 Bomb
+        </p>
+
+        <button
+            class="btn-primary"
+            id="startBtn">
+
+            ▶ ENTER ARENA
+
+        </button>
+
+    </div>
+
+</div>
+
+
+<!-- =======================================================
+     GAME OVER SCREEN
+======================================================= -->
+
+<div
+    class="screen hidden"
+    id="gameOverScreen">
+
+    <div class="screen-card">
+
+        <div class="screen-icon">
+            💀
+        </div>
+
+        <h2>
+            SYSTEM FAIL
+        </h2>
+
+        <p>
+            Your signal has been lost.
+        </p>
+
+        <p>
+            FINAL SCORE
+        </p>
+
+        <div
+            id="finalScore"
+            style="
+            font-size:48px;
+            font-weight:900;
+            margin:8px 0;
+            color:#ffffff;
+            text-shadow:0 0 20px #00ffff;
+            ">
+
+            0
+
+        </div>
+
+        <button
+            class="btn-primary"
+            id="restartBtn">
+
+            ↻ REBOOT SYSTEM
+
+        </button>
+
+    </div>
+
+</div>
+
+
+<!-- =======================================================
+     MAIN GAME
+======================================================= -->
+
+<div class="game-wrapper">
+
+    <div class="game-panel">
+
+
+        <!-- LOGO -->
+
+        <div class="logo">
+
+            <div class="logo-icon">
+                🐍
             </div>
 
-            <!-- HUD -->
-            <div class="hud">
-                <div class="hud-box">
-                    <div class="hud-title">Score</div>
-                    <div class="hud-value" id="score">0</div>
+            <h1>
+                NEON SNAKE
+            </h1>
+
+            <p>
+                CYBER ARENA
+            </p>
+
+        </div>
+
+
+        <!-- HUD -->
+
+        <div class="hud">
+
+            <div class="hud-box">
+
+                <div class="hud-title">
+                    SCORE
                 </div>
-                <div class="hud-box">
-                    <div class="hud-title">Level</div>
-                    <div class="hud-value" id="level">1</div>
+
+                <div
+                    class="hud-value"
+                    id="score">
+
+                    0
+
                 </div>
-                <div class="hud-box">
-                    <div class="hud-title">Best</div>
-                    <div class="hud-value" id="best">0</div>
-                </div>
+
             </div>
 
-            <!-- POWER BAR -->
-            <div class="power-bar" id="powerBar"></div>
 
-            <!-- CANVAS -->
-            <div class="canvas-wrapper">
-                <canvas id="game" width="500" height="500"></canvas>
+            <div class="hud-box">
+
+                <div class="hud-title">
+                    LEVEL
+                </div>
+
+                <div
+                    class="hud-value"
+                    id="level">
+
+                    1
+
+                </div>
+
             </div>
 
-            <!-- BUTTONS -->
-            <div class="button-area">
-                <button class="btn-primary" id="playBtn">▶ Play</button>
-                <button class="btn-secondary" id="pauseBtn">⏸ Pause</button>
-            </div>
 
-            <!-- MOBILE CONTROLS -->
-            <div class="mobile-controls" id="mobileControls">
-                <div class="row">
-                    <button data-dir="up" aria-label="Up">⬆</button>
+            <div class="hud-box">
+
+                <div class="hud-title">
+                    BEST
                 </div>
-                <div class="row">
-                    <button data-dir="left" aria-label="Left">⬅</button>
-                    <button data-dir="down" aria-label="Down">⬇</button>
-                    <button data-dir="right" aria-label="Right">➡</button>
+
+                <div
+                    class="hud-value"
+                    id="best">
+
+                    0
+
                 </div>
+
             </div>
 
         </div>
-    </div>
 
-    <!-- ─── START SCREEN ─── -->
-    <div class="screen" id="startScreen">
-        <div class="screen-card">
-            <div class="screen-icon">🌀</div>
-            <h2>HOLO ARENA</h2>
-            <p>Navigate the iridescent grid.<br />Collect energy, avoid corruption.</p>
-            <p class="tagline">🔴 Food · 💎 Crystal · ⚡ Boost</p>
-            <p class="tagline">🛡️ Shield · 🌀 Portal · 💣 Bomb</p>
-            <button class="btn-primary" id="startBtn">▶ Enter Aurora</button>
+
+        <!-- POWER STATUS -->
+
+        <div
+            class="power-bar"
+            id="powerBar">
+
         </div>
-    </div>
 
-    <!-- ─── GAME OVER SCREEN ─── -->
-    <div class="screen hidden" id="gameOverScreen">
-        <div class="screen-card">
-            <div class="screen-icon">💠</div>
-            <h2>System Glitch</h2>
-            <p>Signal lost</p>
-            <h2 id="finalScore" style="font-family:'Orbitron',sans-serif; font-size:42px; margin-top:4px; -webkit-text-fill-color: #f0f3ff; background:none;">0</h2>
-            <button class="btn-primary" id="restartBtn">⟳ Reboot</button>
+
+        <!-- GAME BOARD -->
+
+        <div class="canvas-wrapper">
+
+            <canvas
+                id="game"
+                width="500"
+                height="500">
+
+            </canvas>
+
         </div>
+
+
+        <!-- DESKTOP BUTTONS -->
+
+        <div class="button-area">
+
+            <button
+                class="btn-primary"
+                id="playBtn">
+
+                ▶ PLAY
+
+            </button>
+
+            <button
+                class="btn-secondary"
+                id="pauseBtn">
+
+                ⏸ PAUSE
+
+            </button>
+
+        </div>
+
+
+        <!-- =================================================
+             MOBILE D-PAD
+        ================================================== -->
+
+        <div
+            class="mobile-controls"
+            id="mobileControls">
+
+
+            <div class="row">
+
+                <button
+                    data-dir="up"
+                    aria-label="Move Up">
+
+                    ⬆
+
+                </button>
+
+            </div>
+
+
+            <div class="row">
+
+                <button
+                    data-dir="left"
+                    aria-label="Move Left">
+
+                    ⬅
+
+                </button>
+
+
+                <button
+                    data-dir="down"
+                    aria-label="Move Down">
+
+                    ⬇
+
+                </button>
+
+
+                <button
+                    data-dir="right"
+                    aria-label="Move Right">
+
+                    ➡
+
+                </button>
+
+            </div>
+
+
+        </div>
+
+
+        <div class="mobile-hint">
+
+            SWIPE OR USE THE D-PAD TO MOVE
+
+        </div>
+
+
     </div>
 
-    <!-- ─── JAVASCRIPT ─── -->
-    <script>
-        /* ============================================================
-               POLYFILL roundRect
-               ============================================================ */
-        if (!CanvasRenderingContext2D.prototype.roundRect) {
-            CanvasRenderingContext2D.prototype.roundRect = function(x, y, w, h, radii) {
-                const r = typeof radii === 'number' ? radii : (radii || 0);
-                const rad = Math.min(r, w / 2, h / 2);
-                this.moveTo(x + rad, y);
-                this.arcTo(x + w, y, x + w, y + h, rad);
-                this.arcTo(x + w, y + h, x, y + h, rad);
-                this.arcTo(x, y + h, x, y, rad);
-                this.arcTo(x, y, x + w, y, rad);
-                return this;
-            };
-        }
+</div>
 
-        /* ============================================================
-               DOM REFS
-               ============================================================ */
-        const canvas = document.getElementById('game');
-        const ctx = canvas.getContext('2d');
 
-        const scoreEl = document.getElementById('score');
-        const levelEl = document.getElementById('level');
-        const bestEl = document.getElementById('best');
-        const powerBar = document.getElementById('powerBar');
-        const finalScoreEl = document.getElementById('finalScore');
+<script>
 
-        const startScreen = document.getElementById('startScreen');
-        const gameOverScreen = document.getElementById('gameOverScreen');
+/* =========================================================
+   CANVAS
+========================================================= */
 
-        const playBtn = document.getElementById('playBtn');
-        const pauseBtn = document.getElementById('pauseBtn');
-        const startBtn = document.getElementById('startBtn');
-        const restartBtn = document.getElementById('restartBtn');
+const canvas =
+document.getElementById("game");
 
-        /* ============================================================
-               STATE
-               ============================================================ */
-        let snake = [];
-        let direction = 'RIGHT';
-        let nextDirection = 'RIGHT';
-        let score = 0;
-        let level = 1;
-        let gameRunning = false;
-        let paused = false;
-        let shieldActive = false;
-        let speedBoost = false;
-        let timer = null;
-        let animFrameId = null;
+const ctx =
+canvas.getContext("2d");
 
-        let food = null;
-        let crystal = null;
-        let lightning = null;
-        let shield = null;
-        let bomb = null;
-        let portal = null;
 
-        // Particle trail
-        let particles = [];
-        const MAX_PARTICLES = 80;
+/* =========================================================
+   DOM
+========================================================= */
 
-        let best = Number(localStorage.getItem('snakeBest')) || 0;
-        bestEl.textContent = best;
+const scoreEl =
+document.getElementById("score");
 
-        /* ============================================================
-               UTILITY
-               ============================================================ */
-        function randomInt(min, max) {
-            return Math.floor(Math.random() * (max - min + 1)) + min;
-        }
+const levelEl =
+document.getElementById("level");
 
-        function randomPosition() {
-            return { x: randomInt(0, 24) * 20, y: randomInt(0, 24) * 20 };
-        }
+const bestEl =
+document.getElementById("best");
 
-        function isOnSnake(pos, ignoreHead = false) {
-            const start = ignoreHead ? 1 : 0;
-            for (let i = start; i < snake.length; i++) {
-                if (snake[i].x === pos.x && snake[i].y === pos.y) return true;
-            }
-            return false;
-        }
+const powerBar =
+document.getElementById("powerBar");
 
-        function randomPositionAvoidSnake() {
-            let pos;
-            let attempts = 0;
-            do {
-                pos = randomPosition();
-                attempts++;
-            } while (isOnSnake(pos, false) && attempts < 200);
-            return pos;
-        }
+const finalScoreEl =
+document.getElementById("finalScore");
 
-        /* ============================================================
-               PARTICLES
-               ============================================================ */
-        function addParticles(x, y, count = 3) {
-            const now = Date.now();
-            for (let i = 0; i < count; i++) {
-                if (particles.length >= MAX_PARTICLES) {
-                    particles.shift();
-                }
-                const hue = (now / 20 + i * 40) % 360;
-                particles.push({
-                    x: x + 10 + (Math.random() - 0.5) * 10,
-                    y: y + 10 + (Math.random() - 0.5) * 10,
-                    vx: (Math.random() - 0.5) * 2.2,
-                    vy: (Math.random() - 0.5) * 2.2 - 0.5,
-                    life: 1.0,
-                    decay: 0.012 + Math.random() * 0.015,
-                    size: 4 + Math.random() * 6,
-                    hue: hue
-                });
-            }
-        }
+const startScreen =
+document.getElementById("startScreen");
 
-        function updateParticles() {
-            for (let i = particles.length - 1; i >= 0; i--) {
-                const p = particles[i];
-                p.x += p.vx;
-                p.y += p.vy;
-                p.life -= p.decay;
-                p.size *= 0.995;
-                if (p.life <= 0 || p.size < 0.3) {
-                    particles.splice(i, 1);
-                }
-            }
-        }
+const gameOverScreen =
+document.getElementById("gameOverScreen");
 
-        function drawParticles() {
-            for (const p of particles) {
-                ctx.globalAlpha = p.life * 0.7;
-                ctx.shadowBlur = 20;
-                ctx.shadowColor = `hsl(${p.hue}, 100%, 70%)`;
-                ctx.fillStyle = `hsl(${p.hue}, 100%, 70%)`;
+const startBtn =
+document.getElementById("startBtn");
+
+const restartBtn =
+document.getElementById("restartBtn");
+
+const playBtn =
+document.getElementById("playBtn");
+
+const pauseBtn =
+document.getElementById("pauseBtn");
+
+
+/* =========================================================
+   GAME STATE
+========================================================= */
+
+const GRID = 20;
+
+const CELL = canvas.width / GRID;
+
+let snake = [];
+
+let direction = "RIGHT";
+
+let nextDirection = "RIGHT";
+
+let score = 0;
+
+let level = 1;
+
+let best =
+Number(localStorage.getItem("neonSnakeBest") || 0);
+
+let gameRunning = false;
+
+let paused = false;
+
+let timer = null;
+
+let food = null;
+
+let crystal = null;
+
+let bomb = null;
+
+let portal = null;
+
+let shieldActive = false;
+
+let speedBoost = false;
+
+
+/* =========================================================
+   RANDOM POSITION
+========================================================= */
+
+function randomPosition(){
+
+    return {
+
+        x:
+        Math.floor(Math.random() * GRID),
+
+        y:
+        Math.floor(Math.random() * GRID)
+
+    };
+
+}
+
+
+/* =========================================================
+   POSITION CHECK
+========================================================= */
+
+function isOnSnake(pos){
+
+    return snake.some(
+        part =>
+        part.x === pos.x &&
+        part.y === pos.y
+    );
+
+}
+
+
+/* =========================================================
+   SAFE POSITION
+========================================================= */
+
+function safePosition(){
+
+    let position;
+
+    let tries = 0;
+
+    do{
+
+        position =
+        randomPosition();
+
+        tries++;
+
+    }
+
+    while(
+        isOnSnake(position) &&
+        tries < 100
+    );
+
+    return position;
+
+}
+
+
+/* =========================================================
+   CREATE ITEMS
+========================================================= */
+
+function createItems(){
+
+    food =
+    safePosition();
+
+    crystal = null;
+
+    bomb = null;
+
+    portal = null;
+
+}
+
+
+/* =========================================================
+   DRAW BACKGROUND
+========================================================= */
+
+function drawBackground(){
+
+    ctx.fillStyle =
+    "#03050d";
+
+    ctx.fillRect(
+        0,
+        0,
+        canvas.width,
+        canvas.height
+    );
+
+
+    /* GRID */
+
+    ctx.strokeStyle =
+    "rgba(0,255,255,.055)";
+
+    ctx.lineWidth = 1;
+
+    for(
+        let i=0;
+        i<=GRID;
+        i++
+    ){
+
+        const p =
+        i * CELL;
+
+        ctx.beginPath();
+
+        ctx.moveTo(
+            p,
+            0
+        );
+
+        ctx.lineTo(
+            p,
+            canvas.height
+        );
+
+        ctx.stroke();
+
+
+        ctx.beginPath();
+
+        ctx.moveTo(
+            0,
+            p
+        );
+
+        ctx.lineTo(
+            canvas.width,
+            p
+        );
+
+        ctx.stroke();
+
+    }
+
+
+    /* BORDER */
+
+    ctx.strokeStyle =
+    "rgba(0,255,255,.35)";
+
+    ctx.lineWidth = 2;
+
+    ctx.strokeRect(
+        1,
+        1,
+        canvas.width-2,
+        canvas.height-2
+    );
+
+}
+
+
+/* =========================================================
+   DRAW FOOD
+========================================================= */
+
+function drawFood(){
+
+    if(!food)
+        return;
+
+    const x =
+    food.x * CELL + CELL/2;
+
+    const y =
+    food.y * CELL + CELL/2;
+
+
+    ctx.save();
+
+    ctx.shadowBlur = 22;
+
+    ctx.shadowColor =
+    "#ff305d";
+
+    ctx.fillStyle =
+    "#ff305d";
+
+    ctx.beginPath();
+
+    ctx.arc(
+        x,
+        y,
+        CELL*.27,
+        0,
+        Math.PI*2
+    );
+
+    ctx.fill();
+
+    ctx.restore();
+
+}
+
+
+/* =========================================================
+   DRAW CRYSTAL
+========================================================= */
+
+function drawCrystal(){
+
+    if(!crystal)
+        return;
+
+    const x =
+    crystal.x * CELL + CELL/2;
+
+    const y =
+    crystal.y * CELL + CELL/2;
+
+
+    ctx.save();
+
+    ctx.shadowBlur = 25;
+
+    ctx.shadowColor =
+    "#b76cff";
+
+    ctx.fillStyle =
+    "#b76cff";
+
+    ctx.beginPath();
+
+    ctx.moveTo(
+        x,
+        y-CELL*.35
+    );
+
+    ctx.lineTo(
+        x+CELL*.3,
+        y
+    );
+
+    ctx.lineTo(
+        x,
+        y+CELL*.35
+    );
+
+    ctx.lineTo(
+        x-CELL*.3,
+        y
+    );
+
+    ctx.closePath();
+
+    ctx.fill();
+
+    ctx.restore();
+
+}
+
+
+/* =========================================================
+   DRAW BOMB
+========================================================= */
+
+function drawBomb(){
+
+    if(!bomb)
+        return;
+
+    const x =
+    bomb.x * CELL + CELL/2;
+
+    const y =
+    bomb.y * CELL + CELL/2;
+
+
+    ctx.save();
+
+    ctx.shadowBlur = 20;
+
+    ctx.shadowColor =
+    "#ff3b30";
+
+    ctx.fillStyle =
+    "#ff3b30";
+
+    ctx.beginPath();
+
+    ctx.arc(
+        x,
+        y,
+        CELL*.28,
+        0,
+        Math.PI*2
+    );
+
+    ctx.fill();
+
+    ctx.fillStyle =
+    "#ffffff";
+
+    ctx.font =
+    "bold 13px Arial";
+
+    ctx.textAlign =
+    "center";
+
+    ctx.textBaseline =
+    "middle";
+
+    ctx.fillText(
+        "!",
+        x,
+        y
+    );
+
+    ctx.restore();
+
+}
+
+
+/* =========================================================
+   DRAW PORTAL
+========================================================= */
+
+function drawPortal(){
+
+    if(!portal)
+        return;
+
+    const x =
+    portal.x * CELL + CELL/2;
+
+    const y =
+    portal.y * CELL + CELL/2;
+
+
+    ctx.save();
+
+    ctx.strokeStyle =
+    "#00ffff";
+
+    ctx.lineWidth = 3;
+
+    ctx.shadowBlur = 25;
+
+    ctx.shadowColor =
+    "#00ffff";
+
+    ctx.beginPath();
+
+    ctx.arc(
+        x,
+        y,
+        CELL*.3,
+        0,
+        Math.PI*2
+    );
+
+    ctx.stroke();
+
+    ctx.restore();
+
+}
+
+
+/* =========================================================
+   DRAW SNAKE
+========================================================= */
+
+function drawSnake(){
+
+    snake.forEach(
+        (part,index)=>{
+
+            const x =
+            part.x * CELL;
+
+            const y =
+            part.y * CELL;
+
+
+            ctx.save();
+
+
+            ctx.shadowBlur =
+            index === 0 ? 24 : 12;
+
+            ctx.shadowColor =
+            index === 0
+            ? "#ffffff"
+            : "#00ffff";
+
+
+            const gradient =
+            ctx.createLinearGradient(
+                x,
+                y,
+                x+CELL,
+                y+CELL
+            );
+
+            gradient.addColorStop(
+                0,
+                index===0
+                ? "#ffffff"
+                : "#00ffff"
+            );
+
+            gradient.addColorStop(
+                1,
+                "#7d4dff"
+            );
+
+
+            ctx.fillStyle =
+            gradient;
+
+
+            ctx.beginPath();
+
+            ctx.roundRect(
+                x+2,
+                y+2,
+                CELL-4,
+                CELL-4,
+                6
+            );
+
+            ctx.fill();
+
+
+            /* EYES */
+
+            if(index===0){
+
+                ctx.fillStyle =
+                "#02030a";
+
                 ctx.beginPath();
-                ctx.arc(p.x, p.y, p.size * p.life, 0, Math.PI * 2);
+
+                ctx.arc(
+                    x+CELL*.35,
+                    y+CELL*.35,
+                    2,
+                    0,
+                    Math.PI*2
+                );
+
+                ctx.arc(
+                    x+CELL*.65,
+                    y+CELL*.35,
+                    2,
+                    0,
+                    Math.PI*2
+                );
+
                 ctx.fill();
+
             }
-            ctx.globalAlpha = 1;
-            ctx.shadowBlur = 0;
+
+
+            ctx.restore();
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   DRAW
+========================================================= */
+
+function draw(){
+
+    drawBackground();
+
+    drawFood();
+
+    drawCrystal();
+
+    drawBomb();
+
+    drawPortal();
+
+    drawSnake();
+
+}
+
+
+/* =========================================================
+   UPDATE HUD
+========================================================= */
+
+function updateHUD(){
+
+    scoreEl.innerText =
+    score;
+
+    level =
+    Math.floor(score / 50) + 1;
+
+    levelEl.innerText =
+    level;
+
+    bestEl.innerText =
+    best;
+
+
+    const powers=[];
+
+
+    if(shieldActive)
+        powers.push("🛡 SHIELD");
+
+
+    if(speedBoost)
+        powers.push("⚡ SPEED");
+
+
+    if(paused)
+        powers.push("⏸ PAUSED");
+
+
+    powerBar.innerHTML =
+    powers
+    .map(
+        p =>
+        `<div class="power">${p}</div>`
+    )
+    .join("");
+
+}
+
+
+/* =========================================================
+   MOVE SNAKE
+========================================================= */
+
+function moveSnake(){
+
+    if(!gameRunning || paused)
+        return;
+
+
+    direction =
+    nextDirection;
+
+
+    const head = {
+
+        x:
+        snake[0].x,
+
+        y:
+        snake[0].y
+
+    };
+
+
+    if(direction==="UP")
+        head.y--;
+
+    if(direction==="DOWN")
+        head.y++;
+
+    if(direction==="LEFT")
+        head.x--;
+
+    if(direction==="RIGHT")
+        head.x++;
+
+
+    /* WALL */
+
+    if(
+        head.x < 0 ||
+        head.x >= GRID ||
+        head.y < 0 ||
+        head.y >= GRID
+    ){
+
+        if(shieldActive){
+
+            shieldActive=false;
+
+            head.x =
+            Math.max(
+                0,
+                Math.min(
+                    GRID-1,
+                    head.x
+                )
+            );
+
+            head.y =
+            Math.max(
+                0,
+                Math.min(
+                    GRID-1,
+                    head.y
+                )
+            );
+
         }
 
-        /* ============================================================
-               SPAWNERS
-               ============================================================ */
-        function spawnFood() {
-            food = randomPositionAvoidSnake();
+        else{
+
+            gameOver();
+
+            return;
+
         }
 
-        function clearPowerUps() {
-            crystal = null;
-            lightning = null;
-            shield = null;
-            bomb = null;
-            portal = null;
+    }
+
+
+    /* SELF COLLISION */
+
+    if(
+        snake.some(
+            (part,index)=>
+            index>0 &&
+            part.x===head.x &&
+            part.y===head.y
+        )
+    ){
+
+        if(shieldActive){
+
+            shieldActive=false;
+
         }
 
-        function spawnPowerUp() {
-            const count = [crystal, lightning, shield, bomb, portal].filter(Boolean).length;
-            if (count >= 2) return;
-            const chance = Math.random();
-            let pos;
-            if (chance < 0.18) { pos = randomPositionAvoidSnake(); if (pos) crystal = pos; } else if (chance < 0.30) { pos =
-                    randomPositionAvoidSnake(); if (pos) lightning = pos; } else if (chance < 0.40) { pos =
-                    randomPositionAvoidSnake(); if (pos) shield = pos; } else if (chance < 0.50) { pos =
-                    randomPositionAvoidSnake(); if (pos) bomb = pos; } else if (chance < 0.58) { pos =
-                    randomPositionAvoidSnake(); if (pos) portal = pos; }
+        else{
+
+            gameOver();
+
+            return;
+
         }
 
-        /* ============================================================
-               GAME LOOP
-               ============================================================ */
-        function gameLoop() {
-            if (!gameRunning || paused) return;
+    }
 
-            direction = nextDirection;
-            const head = { x: snake[0].x, y: snake[0].y };
-            switch (direction) {
-                case 'UP':
-                    head.y -= 20;
-                    break;
-                case 'DOWN':
-                    head.y += 20;
-                    break;
-                case 'LEFT':
-                    head.x -= 20;
-                    break;
-                case 'RIGHT':
-                    head.x += 20;
-                    break;
-            }
 
-            // Particles for trail
-            addParticles(snake[0].x, snake[0].y, 2);
+    snake.unshift(head);
 
-            snake.unshift(head);
-            let ate = false;
-            if (food && head.x === food.x && head.y === food.y) {
-                score += 10;
-                ate = true;
-                spawnFood();
-                spawnPowerUp();
-            }
-            if (!ate) {
-                snake.pop();
-            }
 
-            // Power-ups
-            if (crystal && head.x === crystal.x && head.y === crystal.y) { score += 50;
-                crystal = null; }
-            if (lightning && head.x === lightning.x && head.y === lightning.y) {
-                score += 20;
-                lightning = null;
-                if (!speedBoost) {
-                    speedBoost = true;
-                    resetTimer();
-                    setTimeout(() => { speedBoost = false;
-                        resetTimer(); }, 5000);
-                }
-            }
-            if (shield && head.x === shield.x && head.y === shield.y) {
-                score += 20;
-                shield = null;
-                shieldActive = true;
-                setTimeout(() => { shieldActive = false;
-                    updateHUD(); }, 6000);
-            }
-            if (bomb && head.x === bomb.x && head.y === bomb.y) {
-                gameOver();
-                return;
-            }
-            if (portal && head.x === portal.x && head.y === portal.y) {
-                portal = null;
-                let newPos = randomPositionAvoidSnake();
-                let attempts = 0;
-                while ((newPos.x === head.x && newPos.y === head.y) && attempts < 50) {
-                    newPos = randomPositionAvoidSnake();
-                    attempts++;
-                }
-                head.x = newPos.x;
-                head.y = newPos.y;
-                setTimeout(() => {
-                    if (gameRunning && !portal) {
-                        const p = randomPositionAvoidSnake();
-                        if (p) portal = p;
-                    }
-                }, 4000);
-            }
+    let ate=false;
 
-            // Level
-            const newLevel = Math.floor(score / 100) + 1;
-            if (newLevel !== level) { level = newLevel;
-                resetTimer(); }
 
-            // Collision
-            const headCollision = head.x < 0 || head.x >= 500 || head.y < 0 || head.y >= 500 || hitSelf(head);
-            if (headCollision) {
-                if (shieldActive) {
-                    shieldActive = false;
-                    snake.shift();
-                    const safePos = randomPositionAvoidSnake();
-                    snake.unshift(safePos);
+    /* FOOD */
+
+    if(
+        food &&
+        head.x===food.x &&
+        head.y===food.y
+    ){
+
+        score += 10;
+
+        ate=true;
+
+        food =
+        safePosition();
+
+
+        /* RANDOM POWER */
+
+        const chance =
+        Math.random();
+
+
+        if(chance < .20){
+
+            crystal =
+            safePosition();
+
+        }
+
+        else if(chance < .35){
+
+            shieldActive=true;
+
+        }
+
+        else if(chance < .45){
+
+            speedBoost=true;
+
+            setTimeout(
+                ()=>{
+                    speedBoost=false;
                     updateHUD();
-                } else {
-                    gameOver();
-                    return;
-                }
+                },
+                5000
+            );
+
+        }
+
+    }
+
+
+    /* CRYSTAL */
+
+    if(
+        crystal &&
+        head.x===crystal.x &&
+        head.y===crystal.y
+    ){
+
+        score += 25;
+
+        crystal=null;
+
+        ate=true;
+
+    }
+
+
+    /* BOMB */
+
+    if(
+        bomb &&
+        head.x===bomb.x &&
+        head.y===bomb.y
+    ){
+
+        gameOver();
+
+        return;
+
+    }
+
+
+    /* PORTAL */
+
+    if(
+        portal &&
+        head.x===portal.x &&
+        head.y===portal.y
+    ){
+
+        const pos =
+        safePosition();
+
+        head.x =
+        pos.x;
+
+        head.y =
+        pos.y;
+
+        portal=null;
+
+    }
+
+
+    if(!ate){
+
+        snake.pop();
+
+    }
+
+
+    /* LEVEL ITEMS */
+
+    if(
+        score>0 &&
+        score%50===0
+    ){
+
+        if(!bomb)
+            bomb=safePosition();
+
+    }
+
+
+    if(
+        score>0 &&
+        score%75===0
+    ){
+
+        if(!portal)
+            portal=safePosition();
+
+    }
+
+
+    updateHUD();
+
+    draw();
+
+}
+
+
+/* =========================================================
+   GAME LOOP SPEED
+========================================================= */
+
+function getSpeed(){
+
+    const base =
+    Math.max(
+        55,
+        150 - (level-1)*10
+    );
+
+    return speedBoost
+    ? Math.max(35,base-45)
+    : base;
+
+}
+
+
+function restartLoop(){
+
+    clearInterval(timer);
+
+    timer =
+    setInterval(
+        moveSnake,
+        getSpeed()
+    );
+
+}
+
+
+/* =========================================================
+   START GAME
+========================================================= */
+
+function startGame(){
+
+    clearInterval(timer);
+
+
+    snake = [
+
+        {
+            x:10,
+            y:10
+        },
+
+        {
+            x:9,
+            y:10
+        },
+
+        {
+            x:8,
+            y:10
+        }
+
+    ];
+
+
+    direction="RIGHT";
+
+    nextDirection="RIGHT";
+
+    score=0;
+
+    level=1;
+
+    paused=false;
+
+    gameRunning=true;
+
+    shieldActive=false;
+
+    speedBoost=false;
+
+    createItems();
+
+
+    startScreen
+    .classList
+    .add("hidden");
+
+    gameOverScreen
+    .classList
+    .add("hidden");
+
+
+    updateHUD();
+
+    draw();
+
+    restartLoop();
+
+}
+
+
+/* =========================================================
+   GAME OVER
+========================================================= */
+
+function gameOver(){
+
+    gameRunning=false;
+
+    paused=false;
+
+    clearInterval(timer);
+
+
+    if(score>best){
+
+        best=score;
+
+        localStorage.setItem(
+            "neonSnakeBest",
+            best
+        );
+
+    }
+
+
+    finalScoreEl.innerText =
+    score;
+
+    bestEl.innerText =
+    best;
+
+
+    gameOverScreen
+    .classList
+    .remove("hidden");
+
+}
+
+
+/* =========================================================
+   PAUSE
+========================================================= */
+
+function pauseGame(){
+
+    if(!gameRunning)
+        return;
+
+
+    paused=!paused;
+
+
+    pauseBtn.innerText =
+    paused
+    ? "▶ RESUME"
+    : "⏸ PAUSE";
+
+
+    updateHUD();
+
+}
+
+
+/* =========================================================
+   SAFE DIRECTION CHANGE
+========================================================= */
+
+function changeDirection(newDirection){
+
+    if(!gameRunning || paused)
+        return;
+
+
+    if(
+        newDirection==="UP" &&
+        direction!=="DOWN"
+    ){
+
+        nextDirection="UP";
+
+    }
+
+
+    if(
+        newDirection==="DOWN" &&
+        direction!=="UP"
+    ){
+
+        nextDirection="DOWN";
+
+    }
+
+
+    if(
+        newDirection==="LEFT" &&
+        direction!=="RIGHT"
+    ){
+
+        nextDirection="LEFT";
+
+    }
+
+
+    if(
+        newDirection==="RIGHT" &&
+        direction!=="LEFT"
+    ){
+
+        nextDirection="RIGHT";
+
+    }
+
+}
+
+
+/* =========================================================
+   KEYBOARD CONTROL
+========================================================= */
+
+document.addEventListener(
+    "keydown",
+    function(event){
+
+        const key =
+        event.key;
+
+
+        if(
+            [
+                "ArrowUp",
+                "ArrowDown",
+                "ArrowLeft",
+                "ArrowRight",
+                " "
+            ].includes(key)
+        ){
+
+            event.preventDefault();
+
+        }
+
+
+        if(key==="ArrowUp")
+            changeDirection("UP");
+
+        if(key==="ArrowDown")
+            changeDirection("DOWN");
+
+        if(key==="ArrowLeft")
+            changeDirection("LEFT");
+
+        if(key==="ArrowRight")
+            changeDirection("RIGHT");
+
+        if(key===" ")
+            pauseGame();
+
+    }
+);
+
+
+/* =========================================================
+   MOBILE BUTTON CONTROL
+========================================================= */
+
+document
+.querySelectorAll(
+    ".mobile-controls button"
+)
+.forEach(
+    button=>{
+
+        const handlePress =
+        function(event){
+
+            event.preventDefault();
+
+            const dir =
+            button.dataset.dir;
+
+
+            if(dir==="up")
+                changeDirection("UP");
+
+            if(dir==="down")
+                changeDirection("DOWN");
+
+            if(dir==="left")
+                changeDirection("LEFT");
+
+            if(dir==="right")
+                changeDirection("RIGHT");
+
+        };
+
+
+        button.addEventListener(
+            "touchstart",
+            handlePress,
+            {
+                passive:false
             }
+        );
 
-            drawScene();
-            updateHUD();
+
+        button.addEventListener(
+            "click",
+            handlePress
+        );
+
+    }
+);
+
+
+/* =========================================================
+   SWIPE CONTROL
+========================================================= */
+
+let touchStartX=0;
+
+let touchStartY=0;
+
+
+canvas.addEventListener(
+    "touchstart",
+    function(event){
+
+        const touch =
+        event.changedTouches[0];
+
+        touchStartX =
+        touch.clientX;
+
+        touchStartY =
+        touch.clientY;
+
+    },
+    {
+        passive:true
+    }
+);
+
+
+canvas.addEventListener(
+    "touchend",
+    function(event){
+
+        const touch =
+        event.changedTouches[0];
+
+        const dx =
+        touch.clientX -
+        touchStartX;
+
+        const dy =
+        touch.clientY -
+        touchStartY;
+
+
+        const minSwipe=25;
+
+
+        if(
+            Math.abs(dx)<minSwipe &&
+            Math.abs(dy)<minSwipe
+        ){
+
+            return;
+
         }
 
-        function hitSelf(head) {
-            for (let i = 1; i < snake.length; i++) {
-                if (head.x === snake[i].x && head.y === snake[i].y) return true;
-            }
-            return false;
+
+        if(
+            Math.abs(dx)>Math.abs(dy)
+        ){
+
+            if(dx>0)
+                changeDirection("RIGHT");
+
+            else
+                changeDirection("LEFT");
+
         }
 
-        /* ============================================================
-               DRAW SCENE (Holographic / Iridescent)
-               ============================================================ */
-        function drawScene() {
-            ctx.clearRect(0, 0, 500, 500);
+        else{
 
-            // ---- grid (subtle) ----
-            ctx.strokeStyle = 'rgba(255,255,255,0.03)';
-            ctx.lineWidth = 1;
-            for (let i = 0; i <= 500; i += 20) {
-                ctx.beginPath();
-                ctx.moveTo(i, 0);
-                ctx.lineTo(i, 500);
-                ctx.stroke();
-                ctx.beginPath();
-                ctx.moveTo(0, i);
-                ctx.lineTo(500, i);
-                ctx.stroke();
-            }
+            if(dy>0)
+                changeDirection("DOWN");
 
-            // ---- particles (trail) ----
-            updateParticles();
-            drawParticles();
+            else
+                changeDirection("UP");
 
-            // ---- snake with iridescent gradient ----
-            const time = Date.now() / 25;
-            for (let i = 0; i < snake.length; i++) {
-                const p = snake[i];
-                const isHead = (i === 0);
-                const hue = (time + i * 14) % 360;
-                const sat = 90 + 10 * Math.sin(time / 50 + i);
-                const lig = isHead ? 85 : 65;
-                const color = `hsl(${hue}, ${sat}%, ${lig}%)`;
-
-                ctx.shadowBlur = isHead ? 40 : 24;
-                ctx.shadowColor = `hsl(${hue}, 100%, 70%)`;
-                ctx.fillStyle = color;
-                ctx.beginPath();
-                const size = isHead ? 18 : 16;
-                const offset = (20 - size) / 2;
-                ctx.roundRect(p.x + offset, p.y + offset, size, size, isHead ? 8 : 5);
-                ctx.fill();
-
-                // inner glow for head
-                if (isHead) {
-                    ctx.shadowBlur = 60;
-                    ctx.fillStyle = 'rgba(255,255,255,0.15)';
-                    ctx.beginPath();
-                    ctx.arc(p.x + 10, p.y + 10, 6, 0, Math.PI * 2);
-                    ctx.fill();
-                }
-            }
-            ctx.shadowBlur = 0;
-
-            // ---- draw items with enhanced glow ----
-            drawItem(food, '#ff2bd6', '🔴');
-            drawItem(crystal, '#a855f7', '💎');
-            drawItem(lightning, '#facc15', '⚡');
-            drawItem(shield, '#34d399', '🛡️');
-            drawItem(bomb, '#f87171', '💣');
-            drawItem(portal, '#818cf8', '🌀');
         }
 
-        function drawItem(item, color, emoji) {
-            if (!item) return;
-            ctx.font = '22px "Segoe UI Emoji", "Apple Color Emoji", Arial, sans-serif';
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            ctx.shadowBlur = 40;
-            ctx.shadowColor = color;
-            ctx.fillStyle = color;
-            ctx.fillText(emoji, item.x + 10, item.y + 10);
-            ctx.shadowBlur = 0;
+    },
+    {
+        passive:true
+    }
+);
+
+
+/* =========================================================
+   BUTTON EVENTS
+========================================================= */
+
+startBtn.onclick =
+startGame;
+
+restartBtn.onclick =
+startGame;
+
+playBtn.onclick =
+startGame;
+
+pauseBtn.onclick =
+pauseGame;
+
+
+/* =========================================================
+   INITIAL SCREEN
+========================================================= */
+
+bestEl.innerText =
+best;
+
+draw();
+
+
+/* =========================================================
+   SERVICE WORKER
+========================================================= */
+
+if(
+    "serviceWorker"
+    in navigator
+){
+
+    window.addEventListener(
+        "load",
+        function(){
+
+            navigator
+            .serviceWorker
+            .register(
+                "sw.js"
+            )
+            .catch(
+                error =>
+                console.log(
+                    "Service Worker Error:",
+                    error
+                )
+            );
+
         }
+    );
 
-        /* ============================================================
-               TIMER
-               ============================================================ */
-        function resetTimer() {
-            if (timer) { clearInterval(timer);
-                timer = null; }
-            if (!gameRunning) return;
-            let speed = Math.max(42, 120 - level * 8);
-            if (speedBoost) speed = 32;
-            timer = setInterval(gameLoop, speed);
-        }
+}
 
-        /* ============================================================
-               HUD
-               ============================================================ */
-        function updateHUD() {
-            scoreEl.textContent = score;
-            levelEl.textContent = level;
-            bestEl.textContent = best;
-            const powers = [];
-            if (shieldActive) powers.push('🛡️ Shield');
-            if (speedBoost) powers.push('⚡ Speed');
-            if (paused) powers.push('⏸️ Paused');
-            powerBar.innerHTML = powers.map(p =>
-                `<div class="power">${p}</div>`
-            ).join('');
-        }
-
-        /* ============================================================
-               GAME CONTROL
-               ============================================================ */
-        function startGame() {
-            startScreen.classList.add('hidden');
-            gameOverScreen.classList.add('hidden');
-            snake = [
-                { x: 200, y: 200 },
-                { x: 180, y: 200 },
-                { x: 160, y: 200 }
-            ];
-            direction = 'RIGHT';
-            nextDirection = 'RIGHT';
-            score = 0;
-            level = 1;
-            paused = false;
-            shieldActive = false;
-            speedBoost = false;
-            particles = [];
-            clearPowerUps();
-            spawnFood();
-            spawnPowerUp();
-            gameRunning = true;
-            updateHUD();
-            resetTimer();
-            drawScene();
-        }
-
-        function pauseGame() {
-            if (!gameRunning) return;
-            paused = !paused;
-            if (paused) { if (timer) clearInterval(timer); } else { resetTimer(); }
-            updateHUD();
-        }
-
-        function gameOver() {
-            gameRunning = false;
-            if (timer) { clearInterval(timer);
-                timer = null; }
-            if (score > best) {
-                best = score;
-                localStorage.setItem('snakeBest', String(best));
-            }
-            bestEl.textContent = best;
-            finalScoreEl.textContent = score;
-            gameOverScreen.classList.remove('hidden');
-            updateHUD();
-        }
-
-        /* ============================================================
-               DIRECTION
-               ============================================================ */
-        function setDirection(newDir) {
-            if (!gameRunning || paused) return;
-            const opposites = { 'UP': 'DOWN', 'DOWN': 'UP', 'LEFT': 'RIGHT', 'RIGHT': 'LEFT' };
-            if (newDir !== opposites[direction]) {
-                nextDirection = newDir;
-            }
-        }
-
-        /* ============================================================
-               KEYBOARD
-               ============================================================ */
-        document.addEventListener('keydown', (e) => {
-            const key = e.key;
-            if (key === 'ArrowUp') { e.preventDefault();
-                setDirection('UP'); } else if (key === 'ArrowDown') { e.preventDefault();
-                setDirection('DOWN'); } else if (key === 'ArrowLeft') { e.preventDefault();
-                setDirection('LEFT'); } else if (key === 'ArrowRight') { e.preventDefault();
-                setDirection('RIGHT'); } else if (key === ' ' || key === 'Space') {
-                e.preventDefault();
-                pauseGame();
-            }
-        });
-
-        /* ============================================================
-               MOBILE CONTROLS
-               ============================================================ */
-        document.querySelectorAll('[data-dir]').forEach(btn => {
-            const handler = (e) => {
-                e.preventDefault();
-                const dir = btn.getAttribute('data-dir');
-                if (dir === 'up') setDirection('UP');
-                else if (dir === 'down') setDirection('DOWN');
-                else if (dir === 'left') setDirection('LEFT');
-                else if (dir === 'right') setDirection('RIGHT');
-            };
-            btn.addEventListener('touchstart', handler, { passive: false });
-            btn.addEventListener('mousedown', handler);
-        });
-
-        /* ============================================================
-               BUTTON BINDINGS
-               ============================================================ */
-        playBtn.addEventListener('click', startGame);
-        startBtn.addEventListener('click', startGame);
-        restartBtn.addEventListener('click', startGame);
-        pauseBtn.addEventListener('click', pauseGame);
-
-        /* ============================================================
-               BORDER ANGLE ANIMATION (CSS)
-               ============================================================ */
-        function updateBorderAngle() {
-            const angle = performance.now() / 20;
-            document.documentElement.style.setProperty('--border-angle', angle + 'deg');
-            animFrameId = requestAnimationFrame(updateBorderAngle);
-        }
-        updateBorderAngle();
-
-        /* ============================================================
-               INIT DRAW
-               ============================================================ */
-        (function initDraw() {
-            ctx.clearRect(0, 0, 500, 500);
-            for (let i = 0; i <= 500; i += 20) {
-                ctx.strokeStyle = 'rgba(255,255,255,0.03)';
-                ctx.beginPath();
-                ctx.moveTo(i, 0);
-                ctx.lineTo(i, 500);
-                ctx.stroke();
-                ctx.beginPath();
-                ctx.moveTo(0, i);
-                ctx.lineTo(500, i);
-                ctx.stroke();
-            }
-            const ghost = [
-                { x: 200, y: 200 },
-                { x: 180, y: 200 },
-                { x: 160, y: 200 }
-            ];
-            ghost.forEach((p, i) => {
-                ctx.fillStyle = i === 0 ? 'rgba(255,255,255,0.08)' : 'rgba(160,100,255,0.05)';
-                ctx.shadowBlur = 0;
-                ctx.beginPath();
-                ctx.roundRect(p.x + 2, p.y + 2, 16, 16, 5);
-                ctx.fill();
-            });
-            ctx.shadowBlur = 0;
-        })();
-
-        /* ============================================================
-               SERVICE WORKER (PWA)
-               ============================================================ */
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('sw.js')
-                    .then(() => console.log('✅ Holographic Snake PWA ready'))
-                    .catch(err => console.warn('⚠️ Service Worker error:', err));
-            });
-        }
-
-        console.log('🌀 HOLO SNAKE · Aurora Protocol loaded');
-    </script>
+</script>
 
 </body>
 </html>
