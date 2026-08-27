@@ -1,17 +1,16 @@
 <!DOCTYPE html>
-<html>
+<html lang="bn">
 <head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NEON SNAKE — Cyber Arena</title>
+
 <link rel="icon" type="image/png" href="icon.png">
 <link rel="apple-touch-icon" href="icon.png">
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#00ffff">
 
-<title>NEON SNAKE — Cyber Arena</title>
-
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <style>
-
 *{
     margin:0;
     padding:0;
@@ -22,1314 +21,643 @@ body{
     min-height:100vh;
     font-family:Arial,Helvetica,sans-serif;
     color:white;
-    background:
-    radial-gradient(circle at 50% 20%,
-    #17245c,#07091d 45%,#02030a);
-    overflow:auto;
+    background: radial-gradient(circle at 50% 20%, #17245c, #07091d 45%, #02030a);
+    overflow-x:hidden;
 }
 
-/* CYBER GRID */
-
+/* CYBER GRID BACKGROUND */
 body::before{
     content:"";
     position:fixed;
     inset:0;
-
     background-image:
-    linear-gradient(
-        rgba(0,255,255,.05) 1px,
-        transparent 1px
-    ),
-    linear-gradient(
-        90deg,
-        rgba(0,255,255,.05) 1px,
-        transparent 1px
-    );
-
+        linear-gradient(rgba(0,255,255,.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,255,255,.05) 1px, transparent 1px);
     background-size:40px 40px;
-
     animation:gridMove 8s linear infinite;
-
     pointer-events:none;
 }
 
 @keyframes gridMove{
-
-    from{
-        transform:translateY(0);
-    }
-
-    to{
-        transform:translateY(40px);
-    }
-
+    from{ transform:translateY(0); }
+    to{ transform:translateY(40px); }
 }
 
 /* GAME PANEL */
-
 .game-wrapper{
     width:100%;
     min-height:100vh;
-
     display:flex;
     justify-content:center;
     align-items:center;
-
     position:relative;
-
-    padding:30px 15px;
+    padding:20px 15px;
 }
 
 .game-panel{
-
     width:95%;
-    max-width:650px;
-
+    max-width:550px;
     padding:25px;
-
     border-radius:30px;
-
-    background:
-    rgba(10,15,40,.72);
-
-    border:
-    1px solid rgba(0,255,255,.25);
-
+    background: rgba(10,15,40,.72);
+    border: 1px solid rgba(0,255,255,.25);
     backdrop-filter:blur(20px);
-
-    box-shadow:
-    0 0 50px rgba(0,255,255,.12),
-    inset 0 0 40px rgba(255,255,255,.02);
+    box-shadow: 0 0 50px rgba(0,255,255,.12), inset 0 0 40px rgba(255,255,255,.02);
 }
 
 /* LOGO */
-
 .logo{
     text-align:center;
-    margin-bottom:18px;
+    margin-bottom:15px;
 }
 
 .logo-icon{
-    font-size:48px;
-
-    filter:
-    drop-shadow(0 0 20px #00ffff);
+    font-size:42px;
+    filter: drop-shadow(0 0 20px #00ffff);
 }
 
 .logo h1{
-
-    font-size:35px;
-
+    font-size:32px;
     letter-spacing:6px;
-
     color:#00ffff;
-
-    text-shadow:
-    0 0 10px #00ffff,
-    0 0 30px #00ffff;
+    text-shadow: 0 0 10px #00ffff, 0 0 30px #00ffff;
 }
 
 .logo p{
-
-    margin-top:5px;
-
+    margin-top:3px;
     color:#8295c7;
-
     letter-spacing:4px;
-
     font-size:11px;
 }
 
 /* HUD */
-
 .hud{
-
     display:grid;
-
-    grid-template-columns:
-    repeat(3,1fr);
-
+    grid-template-columns: repeat(3,1fr);
     gap:10px;
-
     margin-bottom:10px;
 }
 
 .hud-box{
-
     padding:10px;
-
     text-align:center;
-
     border-radius:15px;
-
-    background:
-    rgba(255,255,255,.04);
-
-    border:
-    1px solid rgba(0,255,255,.15);
+    background: rgba(255,255,255,.04);
+    border: 1px solid rgba(0,255,255,.15);
 }
 
 .hud-title{
-
     font-size:9px;
-
     color:#7283ad;
-
     letter-spacing:2px;
 }
 
 .hud-value{
-
     margin-top:4px;
-
     font-size:19px;
-
     font-weight:bold;
-
     color:#00ffff;
 }
 
 /* POWER HUD */
-
 .power-bar{
-
     display:flex;
-
     justify-content:center;
-
     gap:8px;
-
     min-height:28px;
-
     margin-bottom:8px;
-
 }
 
 .power{
-
-    padding:5px 10px;
-
+    padding:5px 12px;
     border-radius:20px;
-
-    background:
-    rgba(255,255,255,.07);
-
-    border:
-    1px solid rgba(255,255,255,.12);
-
+    background: rgba(255,255,255,.07);
+    border: 1px solid rgba(255,255,255,.12);
     font-size:11px;
 }
 
 /* CANVAS */
-
 .canvas-wrapper{
-
     display:flex;
-
     justify-content:center;
-
 }
 
 canvas{
-
     width:100%;
-
-    max-width:500px;
-
+    max-width:450px;
     aspect-ratio:1;
-    
     display:block;
-
     margin-bottom:10px;
-
-    background:
-    rgba(0,0,0,.45);
-
+    background: rgba(0,0,0,.45);
     border-radius:20px;
-
-    border:
-    1px solid rgba(0,255,255,.35);
-
-    box-shadow:
-    0 0 25px rgba(0,255,255,.15);
+    border: 1px solid rgba(0,255,255,.35);
+    box-shadow: 0 0 25px rgba(0,255,255,.15);
 }
 
 /* BUTTONS */
-
 .button-area{
-
     display:flex;
-
     justify-content:center;
-
     gap:12px;
-
-    margin-top:15px;
+    margin-top:10px;
 }
 
 button{
-
     border:none;
-
     padding:12px 24px;
-
     border-radius:12px;
-
     font-size:13px;
-
     font-weight:bold;
-
     letter-spacing:1px;
-
     cursor:pointer;
-
     color:#001010;
-
     background:#00ffff;
-
-    box-shadow:
-    0 0 15px rgba(0,255,255,.5);
-
+    box-shadow: 0 0 15px rgba(0,255,255,.5);
     transition:.25s;
 }
 
 button:hover{
-
-    transform:
-    translateY(-3px)
-    scale(1.03);
-
-    box-shadow:
-    0 0 30px rgba(0,255,255,.8);
+    transform: translateY(-3px) scale(1.03);
+    box-shadow: 0 0 30px rgba(0,255,255,.8);
 }
 
 .secondary{
-
-    background:
-    rgba(255,255,255,.07);
-
+    background: rgba(255,255,255,.07);
     color:white;
-
-    border:
-    1px solid rgba(255,255,255,.15);
-
+    border: 1px solid rgba(255,255,255,.15);
     box-shadow:none;
 }
 
-/* SCREENS */
+/* MOBILE SNAKE CONTROLS */
+.mobile-controls{
+    display:none;
+    width:100%;
+    margin-top:15px;
+    text-align:center;
+    user-select:none;
+}
 
+.mobile-controls button{
+    width:55px;
+    height:55px;
+    margin:4px;
+    padding:0;
+    border:1px solid rgba(0,255,255,.7);
+    border-radius:16px;
+    background:rgba(0,255,255,.12);
+    color:#00ffff;
+    font-size:22px;
+    font-weight:bold;
+    box-shadow:0 0 15px rgba(0,255,255,.25);
+    -webkit-tap-highlight-color:transparent;
+    touch-action:manipulation;
+}
+
+.mobile-controls button:active{
+    transform:scale(.90);
+    background:rgba(0,255,255,.30);
+}
+
+@media(max-width:768px){
+    .mobile-controls{
+        display:block;
+    }
+}
+
+/* SCREENS OVERLAY */
 .screen{
-
     position:fixed;
-
     inset:0;
-
     display:flex;
-
     justify-content:center;
-
     align-items:center;
-
-    background:
-    rgba(1,2,10,.82);
-
+    background: rgba(1,2,10,.82);
     backdrop-filter:blur(12px);
-
     z-index:100;
 }
 
 .screen-card{
-
     width:90%;
-
     max-width:450px;
-
     padding:40px 30px;
-
     text-align:center;
-
     border-radius:28px;
-
-    background:
-    rgba(10,15,40,.94);
-
-    border:
-    1px solid rgba(0,255,255,.3);
-
-    box-shadow:
-    0 0 70px rgba(0,255,255,.15);
-
+    background: rgba(10,15,40,.94);
+    border: 1px solid rgba(0,255,255,.3);
+    box-shadow: 0 0 70px rgba(0,255,255,.15);
     animation:popup .5s ease;
 }
 
 @keyframes popup{
-
-    from{
-        opacity:0;
-        transform:scale(.8);
-    }
-
-    to{
-        opacity:1;
-        transform:scale(1);
-    }
-
+    from{ opacity:0; transform:scale(.8); }
+    to{ opacity:1; transform:scale(1); }
 }
 
 .screen-icon{
-
     font-size:65px;
-
     margin-bottom:10px;
-
-    filter:
-    drop-shadow(0 0 20px #00ffff);
+    filter: drop-shadow(0 0 20px #00ffff);
 }
 
 .screen-card h2{
-
     font-size:32px;
-
     letter-spacing:4px;
-
     color:#00ffff;
-
-    text-shadow:
-    0 0 20px #00ffff;
+    text-shadow: 0 0 20px #00ffff;
 }
 
 .screen-card p{
-
     margin-top:12px;
-
     color:#9aa9d1;
 }
 
 .hidden{
-    display:none;
+    display:none !important;
 }
-
-/* MOBILE */
 
 @media(max-width:600px){
-
-    .game-panel{
-        padding:15px;
-        border-radius:20px;
-    }
-.game-wrapper{
-    align-items:flex-start;
-    padding-top:20px;
-    padding-bottom:20px;
+    .game-panel{ padding:15px; border-radius:20px; }
+    .game-wrapper{ align-items:flex-start; padding-top:15px; }
+    .logo h1{ font-size:24px; }
+    .logo-icon{ font-size:35px; }
 }
-
-    .logo h1{
-        font-size:26px;
-    }
-
-    .logo-icon{
-        font-size:40px;
-    }
-
-    .button-area{
-        flex-direction:column;
-    }
-
-}
-
 </style>
-
 </head>
 
 <body>
 
-
 <div class="game-wrapper">
+    <div class="game-panel">
+        <div class="logo">
+            <div class="logo-icon">🐍</div>
+            <h1>NEON SNAKE</h1>
+            <p>CYBER ARENA</p>
+        </div>
 
-<div class="game-panel">
+        <!-- HUD -->
+        <div class="hud">
+            <div class="hud-box">
+                <div class="hud-title">SCORE</div>
+                <div class="hud-value" id="score">0</div>
+            </div>
+            <div class="hud-box">
+                <div class="hud-title">LEVEL</div>
+                <div class="hud-value" id="level">1</div>
+            </div>
+            <div class="hud-box">
+                <div class="hud-title">BEST</div>
+                <div class="hud-value" id="best">0</div>
+            </div>
+        </div>
 
+        <!-- POWER STATUS -->
+        <div class="power-bar" id="powerBar"></div>
 
-<div class="logo">
+        <div class="canvas-wrapper">
+            <canvas id="game" width="500" height="500"></canvas>
+        </div>
 
-<div class="logo-icon">🐍</div>
+        <div class="button-area">
+            <button onclick="startGame()">▶ PLAY</button>
+            <button class="secondary" onclick="pauseGame()">⏸ PAUSE</button>
+        </div>
 
-<h1>NEON SNAKE</h1>
-
-<p>CYBER ARENA</p>
-
+        <!-- MOBILE CONTROLS INSIDE PANEL -->
+        <div class="mobile-controls">
+            <div>
+                <button onclick="mobileMove('UP')">⬆️</button>
+            </div>
+            <div>
+                <button onclick="mobileMove('LEFT')">⬅️</button>
+                <button onclick="mobileMove('DOWN')">⬇️</button>
+                <button onclick="mobileMove('RIGHT')">➡️</button>
+            </div>
+        </div>
+    </div>
 </div>
-
-
-<!-- HUD -->
-
-<div class="hud">
-
-<div class="hud-box">
-
-<div class="hud-title">
-SCORE
-</div>
-
-<div
-class="hud-value"
-id="score">
-0
-</div>
-
-</div>
-
-
-<div class="hud-box">
-
-<div class="hud-title">
-LEVEL
-</div>
-
-<div
-class="hud-value"
-id="level">
-1
-</div>
-
-</div>
-
-
-<div class="hud-box">
-
-<div class="hud-title">
-BEST
-</div>
-
-<div
-class="hud-value"
-id="best">
-0
-</div>
-
-</div>
-
-</div>
-
-
-<!-- POWER STATUS -->
-
-<div
-class="power-bar"
-id="powerBar">
-
-</div>
-
-
-<div class="canvas-wrapper">
-
-<canvas
-id="game"
-width="500"
-height="500">
-</canvas>
-
-</div>
-
-
-<div class="button-area">
-
-<button onclick="startGame()">
-▶ PLAY
-</button>
-
-<button
-class="secondary"
-onclick="pauseGame()">
-⏸ PAUSE
-</button>
-
-</div>
-
-</div>
-
-</div>
-
 
 <!-- START SCREEN -->
-
-<div
-class="screen"
-id="startScreen">
-
-<div class="screen-card">
-
-<div class="screen-icon">
-🐍
+<div class="screen" id="startScreen">
+    <div class="screen-card">
+        <div class="screen-icon">🐍</div>
+        <h2>CYBER ARENA</h2>
+        <p>Collect energy and survive.</p>
+        <p style="margin-top:15px; font-size:14px;">
+            🔴 Energy &nbsp; 💎 Crystal &nbsp; ⚡ Boost
+        </p>
+        <p style="margin-top:5px; font-size:14px;">
+            🛡️ Shield &nbsp; 🌀 Portal &nbsp; 💣 Bomb
+        </p>
+        <button onclick="startGame()" style="margin-top:25px;">▶ ENTER ARENA</button>
+    </div>
 </div>
 
-<h2>
-CYBER ARENA
-</h2>
-
-<p>
-Collect energy and survive.
-</p>
-
-<p>
-🔴 Energy &nbsp; 💎 Crystal &nbsp; ⚡ Boost
-</p>
-
-<p>
-🛡️ Shield &nbsp; 🌀 Portal &nbsp; 💣 Bomb
-</p>
-
-<button
-onclick="startGame()">
-
-▶ ENTER ARENA
-
-</button>
-
+<!-- GAME OVER SCREEN -->
+<div class="screen hidden" id="gameOverScreen">
+    <div class="screen-card">
+        <div class="screen-icon">💀</div>
+        <h2>SYSTEM FAIL</h2>
+        <p>FINAL SCORE</p>
+        <h2 id="finalScore" style="font-size:45px; margin:10px 0;">0</h2>
+        <button onclick="startGame()">🔄 PLAY AGAIN</button>
+    </div>
 </div>
-
-</div>
-
-
-<!-- GAME OVER -->
-
-<div
-class="screen hidden"
-id="gameOverScreen">
-
-<div class="screen-card">
-
-<div class="screen-icon">
-💀
-</div>
-
-<h2>
-SYSTEM FAIL
-</h2>
-
-<p>
-FINAL SCORE
-</p>
-
-<h2 id="finalScore">
-0
-</h2>
-
-<button
-onclick="startGame()">
-
-🔄 PLAY AGAIN
-
-</button>
-
-</div>
-
-</div>
-
 
 <script>
+const canvas = document.getElementById("game");
+const ctx = canvas.getContext("2d");
 
-const canvas =
-document.getElementById("game");
+let snake = [];
+let food = null;
+let crystal = null;
+let lightning = null;
+let shield = null;
+let bomb = null;
+let portal = null;
 
-const ctx =
-canvas.getContext("2d");
+let direction = "RIGHT";
+let nextDirection = "RIGHT"; // প্রিভেন্ট হঠাৎ রিভার্স কোলাইড
+let score = 0;
+let level = 1;
+let gameRunning = false;
+let paused = false;
+let shieldActive = false;
+let speedBoost = false;
+let timer = null;
 
+/* BEST SCORE */
+let best = localStorage.getItem("snakeBest") || 0;
+document.getElementById("best").innerText = best;
 
-let snake;
-
-let food;
-
-let crystal;
-
-let lightning;
-
-let shield;
-
-let bomb;
-
-let portal;
-
-let direction;
-
-let score=0;
-
-let level=1;
-
-let gameRunning=false;
-
-let paused=false;
-
-let shieldActive=false;
-
-let speedBoost=false;
-
-let timer;
-
-
-/* BEST */
-
-let best=
-localStorage.getItem("snakeBest")||0;
-
-document.getElementById("best")
-.innerText=best;
-
-
-/* START */
-
+/* START GAME */
 function startGame(){
+    document.getElementById("startScreen").classList.add("hidden");
+    document.getElementById("gameOverScreen").classList.add("hidden");
 
-    document
-    .getElementById("startScreen")
-    .classList.add("hidden");
-
-    document
-    .getElementById("gameOverScreen")
-    .classList.add("hidden");
-
-
-    snake=[
-
-        {x:200,y:200},
-
-        {x:180,y:200},
-
-        {x:160,y:200}
-
+    snake = [
+        {x:200, y:200},
+        {x:180, y:200},
+        {x:160, y:200}
     ];
 
-
-    direction="RIGHT";
-
-    score=0;
-
-    level=1;
-
-    paused=false;
-
-    shieldActive=false;
-
-    speedBoost=false;
+    direction = "RIGHT";
+    nextDirection = "RIGHT";
+    score = 0;
+    level = 1;
+    paused = false;
+    shieldActive = false;
+    speedBoost = false;
 
     clearPowerUps();
-
     spawnFood();
-
-    gameRunning=true;
-
+    gameRunning = true;
     updateHUD();
-
     startTimer();
-
 }
 
-
-/* TIMER */
-
+/* TIMER CONTROL */
 function startTimer(){
-
     clearInterval(timer);
-
-    let speed=
-    Math.max(
-        45,
-        120-(level*8)
-    );
-
-    if(speedBoost)
-        speed=35;
-
-    timer=
-    setInterval(
-        gameLoop,
-        speed
-    );
-
+    let speed = Math.max(45, 120 - (level * 8));
+    if(speedBoost) speed = 35;
+    timer = setInterval(gameLoop, speed);
 }
 
-
-/* FOOD */
-
+/* POSITIONS */
 function randomPosition(){
-
     return {
-
-        x:
-        Math.floor(
-            Math.random()*25
-        )*20,
-
-        y:
-        Math.floor(
-            Math.random()*25
-        )*20
-
+        x: Math.floor(Math.random() * 25) * 20,
+        y: Math.floor(Math.random() * 25) * 20
     };
-
 }
-
 
 function spawnFood(){
-
-    food=randomPosition();
-
+    food = randomPosition();
 }
-
-
-/* POWER UPS */
 
 function clearPowerUps(){
-
-    crystal=null;
-
-    lightning=null;
-
-    shield=null;
-
-    bomb=null;
-
-    portal=null;
-
+    crystal = null;
+    lightning = null;
+    shield = null;
+    bomb = null;
+    portal = null;
 }
-
 
 function spawnPowerUp(){
-
-    let chance=
-    Math.random();
-
-
-    if(chance<0.18)
-        crystal=randomPosition();
-
-
-    else if(chance<0.30)
-        lightning=randomPosition();
-
-
-    else if(chance<0.40)
-        shield=randomPosition();
-
-
-    else if(chance<0.50)
-        bomb=randomPosition();
-
-
-    else if(chance<0.58)
-        portal=randomPosition();
-
+    let chance = Math.random();
+    if(chance < 0.15) crystal = randomPosition();
+    else if(chance < 0.28) lightning = randomPosition();
+    else if(chance < 0.38) shield = randomPosition();
+    else if(chance < 0.48) bomb = randomPosition();
+    else if(chance < 0.55) portal = randomPosition();
 }
 
-
-/* CONTROLS */
-
-document.addEventListener(
-"keydown",
-function(e){
-
-    if(e.key==="ArrowUp" &&
-       direction!=="DOWN")
-        direction="UP";
-
-
-    if(e.key==="ArrowDown" &&
-       direction!=="UP")
-        direction="DOWN";
-
-
-    if(e.key==="ArrowLeft" &&
-       direction!=="RIGHT")
-        direction="LEFT";
-
-
-    if(e.key==="ArrowRight" &&
-       direction!=="LEFT")
-        direction="RIGHT";
-
-
-    if(e.key===" ")
-        pauseGame();
-
+/* CONTROLS (KEYBOARD) */
+document.addEventListener("keydown", function(e){
+    if(e.key === "ArrowUp" && direction !== "DOWN") nextDirection = "UP";
+    if(e.key === "ArrowDown" && direction !== "UP") nextDirection = "DOWN";
+    if(e.key === "ArrowLeft" && direction !== "RIGHT") nextDirection = "LEFT";
+    if(e.key === "ArrowRight" && direction !== "LEFT") nextDirection = "RIGHT";
+    if(e.key === " " || e.key === "p" || e.key === "P") pauseGame();
 });
 
+/* MOBILE CONTROLS */
+function mobileMove(dir){
+    if(!gameRunning || paused) return;
+    if(dir === "UP" && direction !== "DOWN") nextDirection = "UP";
+    if(dir === "DOWN" && direction !== "UP") nextDirection = "DOWN";
+    if(dir === "LEFT" && direction !== "RIGHT") nextDirection = "LEFT";
+    if(dir === "RIGHT" && direction !== "LEFT") nextDirection = "RIGHT";
+}
 
-/* PAUSE */
-
+/* PAUSE GAME */
 function pauseGame(){
-
-    if(!gameRunning)
-        return;
-
-    paused=!paused;
-
+    if(!gameRunning) return;
+    paused = !paused;
+    updateHUD();
 }
 
-
-/* DRAW ITEM */
-
-function drawItem(item,color,emoji){
-
-    if(!item)
-        return;
-
-    ctx.font="18px Arial";
-
-    ctx.textAlign="center";
-
-    ctx.textBaseline="middle";
-
-    ctx.shadowBlur=20;
-
-    ctx.shadowColor=color;
-
-    ctx.fillStyle=color;
-
-    ctx.fillText(
-        emoji,
-        item.x+10,
-        item.y+10
-    );
-
-    ctx.shadowBlur=0;
-
+/* DRAW EMOJI ITEM */
+function drawItem(item, color, emoji){
+    if(!item) return;
+    ctx.font = "16px Arial";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.shadowBlur = 15;
+    ctx.shadowColor = color;
+    ctx.fillStyle = color;
+    ctx.fillText(emoji, item.x + 10, item.y + 10);
+    ctx.shadowBlur = 0;
 }
-
 
 /* GAME LOOP */
-
 function gameLoop(){
+    if(!gameRunning || paused) return;
 
-    if(!gameRunning || paused)
-        return;
+    direction = nextDirection;
 
+    ctx.clearRect(0, 0, 500, 500);
 
-    ctx.clearRect(
-        0,0,500,500
-    );
-
-
-    /* GRID */
-
-    ctx.strokeStyle=
-    "rgba(0,255,255,.06)";
-
-
-    for(
-        let i=0;
-        i<500;
-        i+=20
-    ){
-
+    /* GRID LINES */
+    ctx.strokeStyle = "rgba(0,255,255,.06)";
+    for(let i=0; i<500; i+=20){
         ctx.beginPath();
-
         ctx.moveTo(i,0);
-
         ctx.lineTo(i,500);
-
         ctx.stroke();
 
-
         ctx.beginPath();
-
         ctx.moveTo(0,i);
-
         ctx.lineTo(500,i);
-
         ctx.stroke();
-
     }
 
-
-    /* SNAKE */
-
-    snake.forEach(
-    (part,index)=>{
-
-        ctx.fillStyle=
-        index===0
-        ? "#ffffff"
-        : "#00ffff";
-
-        ctx.shadowBlur=18;
-
-        ctx.shadowColor="#00ffff";
-
+    /* SNAKE DRAWING */
+    snake.forEach((part, index) => {
+        ctx.fillStyle = index === 0 ? "#ffffff" : "#00ffff";
+        ctx.shadowBlur = 18;
+        ctx.shadowColor = "#00ffff";
 
         ctx.beginPath();
-
-        ctx.roundRect(
-            part.x+2,
-            part.y+2,
-            16,
-            16,
-            5
-        );
-
+        ctx.roundRect(part.x + 2, part.y + 2, 16, 16, 5);
         ctx.fill();
-
     });
+    ctx.shadowBlur = 0;
 
+    /* ITEMS DRAWING */
+    drawItem(food, "#ff2bd6", "🔴");
+    drawItem(crystal, "#a855f7", "💎");
+    drawItem(lightning, "#ffff00", "⚡");
+    drawItem(shield, "#00ff88", "🛡️");
+    drawItem(bomb, "#ff3333", "💣");
+    drawItem(portal, "#9b5cff", "🌀");
 
-    ctx.shadowBlur=0;
+    /* CALCULATE NEW HEAD */
+    let head = { x: snake[0].x, y: snake[0].y };
+    if(direction === "UP") head.y -= 20;
+    if(direction === "DOWN") head.y += 20;
+    if(direction === "LEFT") head.x -= 20;
+    if(direction === "RIGHT") head.x += 20;
 
-
-    /* ITEMS */
-
-    drawItem(
-        food,
-        "#ff2bd6",
-        "🔴"
-    );
-
-
-    drawItem(
-        crystal,
-        "#a855f7",
-        "💎"
-    );
-
-
-    drawItem(
-        lightning,
-        "#ffff00",
-        "⚡"
-    );
-
-
-    drawItem(
-        shield,
-        "#00ff88",
-        "🛡️"
-    );
-
-
-    drawItem(
-        bomb,
-        "#ff3333",
-        "💣"
-    );
-
-
-    drawItem(
-        portal,
-        "#9b5cff",
-        "🌀"
-    );
-
-
-    /* NEW HEAD */
-
-    let head={
-        x:snake[0].x,
-        y:snake[0].y
-    };
-
-
-    if(direction==="UP")
-        head.y-=20;
-
-    if(direction==="DOWN")
-        head.y+=20;
-
-    if(direction==="LEFT")
-        head.x-=20;
-
-    if(direction==="RIGHT")
-        head.x+=20;
-
-
-    snake.unshift(head);
-
-
-    /* NORMAL FOOD */
-
-    if(
-        head.x===food.x &&
-        head.y===food.y
-    ){
-
-        score+=10;
-
+    /* EAT FOOD */
+    if(head.x === food.x && head.y === food.y){
+        score += 10;
         spawnFood();
-
         spawnPowerUp();
-
-    }
-
-    else{
-
+    } else {
         snake.pop();
-
     }
 
-
-    /* CRYSTAL */
-
-    if(
-        crystal &&
-        head.x===crystal.x &&
-        head.y===crystal.y
-    ){
-
-        score+=50;
-
-        crystal=null;
-
+    /* POWER-UPS INTERACTIONS */
+    if(crystal && head.x === crystal.x && head.y === crystal.y){
+        score += 50;
+        crystal = null;
     }
 
-
-    /* LIGHTNING */
-
-    if(
-        lightning &&
-        head.x===lightning.x &&
-        head.y===lightning.y
-    ){
-
-        score+=20;
-
-        lightning=null;
-
-        speedBoost=true;
-
+    if(lightning && head.x === lightning.x && head.y === lightning.y){
+        score += 20;
+        lightning = null;
+        speedBoost = true;
         startTimer();
-
-        setTimeout(
-            ()=>{
-                speedBoost=false;
-                startTimer();
-            },
-            5000
-        );
-
+        setTimeout(() => {
+            speedBoost = false;
+            startTimer();
+        }, 5000);
     }
 
-
-    /* SHIELD */
-
-    if(
-        shield &&
-        head.x===shield.x &&
-        head.y===shield.y
-    ){
-
-        score+=20;
-
-        shield=null;
-
-        shieldActive=true;
-
+    if(shield && head.x === shield.x && head.y === shield.y){
+        score += 20;
+        shield = null;
+        shieldActive = true;
     }
 
-
-    /* BOMB */
-
-    if(
-        bomb &&
-        head.x===bomb.x &&
-        head.y===bomb.y
-    ){
-
-        gameOver();
-
-        return;
-
+    if(bomb && head.x === bomb.x && head.y === bomb.y){
+        if(shieldActive){
+            shieldActive = false;
+            bomb = null;
+        } else {
+            gameOver();
+            return;
+        }
     }
 
-
-    /* PORTAL */
-
-    if(
-        portal &&
-        head.x===portal.x &&
-        head.y===portal.y
-    ){
-
-        let newPosition=
-        randomPosition();
-
-        head.x=newPosition.x;
-
-        head.y=newPosition.y;
-
-        portal=null;
-
+    if(portal && head.x === portal.x && head.y === portal.y){
+        let newPos = randomPosition();
+        head.x = newPos.x;
+        head.y = newPos.y;
+        portal = null;
     }
 
-
-    /* LEVEL */
-
-    let newLevel=
-    Math.floor(score/100)+1;
-
-
-    if(newLevel!==level){
-
-        level=newLevel;
-
+    /* UPDATE LEVEL */
+    let newLevel = Math.floor(score / 100) + 1;
+    if(newLevel !== level){
+        level = newLevel;
         startTimer();
-
     }
 
-
-    /* COLLISION */
-
-    let collision=
-
-        head.x<0 ||
-        head.x>=500 ||
-        head.y<0 ||
-        head.y>=500 ||
-        hitSelf(head);
-
+    /* CHECK COLLISION */
+    let collision = head.x < 0 || head.x >= 500 || head.y < 0 || head.y >= 500 || hitSelf(head);
 
     if(collision){
-
         if(shieldActive){
-
-            shieldActive=false;
-
-        }
-
-        else{
-
+            shieldActive = false;
+            // শিールド ভাঙলে রিভার্স ড্রাইভ বা আগের ঘরে সেফ রাখা
+        } else {
             gameOver();
-
             return;
-
         }
-
     }
 
-
+    snake.unshift(head);
     updateHUD();
-
 }
-
 
 /* SELF HIT */
-
 function hitSelf(head){
-
-    for(
-        let i=1;
-        i<snake.length;
-        i++
-    ){
-
-        if(
-            head.x===snake[i].x &&
-            head.y===snake[i].y
-        )
-
-            return true;
-
+    for(let i = 1; i < snake.length; i++){
+        if(head.x === snake[i].x && head.y === snake[i].y) return true;
     }
-
     return false;
-
 }
 
-
-/* HUD */
-
+/* HUD UPDATE */
 function updateHUD(){
+    document.getElementById("score").innerText = score;
+    document.getElementById("level").innerText = level;
 
-    document.getElementById(
-        "score"
-    ).innerText=score;
+    let bar = document.getElementById("powerBar");
+    let powers = [];
 
+    if(shieldActive) powers.push("🛡️ SHIELD");
+    if(speedBoost) powers.push("⚡ SPEED BOOST");
+    if(paused) powers.push("⏸️ PAUSED");
 
-    document.getElementById(
-        "level"
-    ).innerText=level;
-
-
-    let bar=
-    document.getElementById(
-        "powerBar"
-    );
-
-
-    let powers=[];
-
-
-    if(shieldActive)
-        powers.push("🛡️ SHIELD");
-
-
-    if(speedBoost)
-        powers.push("⚡ SPEED BOOST");
-
-
-    if(paused)
-        powers.push("⏸️ PAUSED");
-
-
-    bar.innerHTML=
-    powers.map(
-        p=>`<div class="power">${p}</div>`
-    ).join("");
-
+    bar.innerHTML = powers.map(p => `<div class="power">${p}</div>`).join("");
 }
-
 
 /* GAME OVER */
-
 function gameOver(){
-
-    gameRunning=false;
-
+    gameRunning = false;
     clearInterval(timer);
 
-
-    if(score>best){
-
-        best=score;
-
-        localStorage.setItem(
-            "snakeBest",
-            best
-        );
-
+    if(score > best){
+        best = score;
+        localStorage.setItem("snakeBest", best);
     }
 
-
-    document.getElementById(
-        "best"
-    ).innerText=best;
-
-
-    document.getElementById(
-        "finalScore"
-    ).innerText=score;
-
-
-    document
-    .getElementById("gameOverScreen")
-    .classList.remove("hidden");
-
+    document.getElementById("best").innerText = best;
+    document.getElementById("finalScore").innerText = score;
+    document.getElementById("gameOverScreen").classList.remove("hidden");
 }
 
-</script>
-<script>
-
+/* SERVICE WORKER */
 if ("serviceWorker" in navigator) {
-
     window.addEventListener("load", function() {
-
         navigator.serviceWorker.register("sw.js")
-        .then(function() {
-            console.log("Neon Snake PWA is ready!");
-        })
-        .catch(function(error) {
-            console.log("Service Worker Error:", error);
-        });
-
+        .then(() => console.log("Neon Snake PWA Ready!"))
+        .catch((err) => console.log("SW Error:", err));
     });
-
 }
-
 </script>
-
 </body>
+</html>
